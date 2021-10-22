@@ -1,0 +1,77 @@
+
+   Summary motif results
+   =====================
+mfinder Version 1.20
+
+MOTIF FINDER RESULTS:
+
+	Network name: alpha.el
+	Network type: Directed
+	Num of Nodes: 510 Num of Edges: 510
+	Num of Nodes with edges: 510
+	Maximal out degree (out-hub) : 2
+	Maximal in degree (in-hub) : 1
+	Roots num: 0 Leaves num: 256
+	Single Edges num: 508 Mutual Edges num: 0
+
+	Motif size searched  3
+	Total number of 3-node subgraphs : 762
+	Number of random networks generated : 100
+	Random networks generation method: Switches
+	Num of Switches range: 100.0-200.0, Success switches Ratio:0.988+-0.00
+
+The following motifs were found:
+
+Criteria taken : Nreal Zscore > 2.00
+                 Pval ignored (due to small number of random networks)
+                 Mfactor > 1.10
+                 Uniqueness >= 4
+
+
+
+	Full list includes 0 motifs
+MOTIF	NREAL	NRAND		NREAL	NREAL	UNIQ	CREAL
+ID		STATS		ZSCORE	PVAL	VAL	[MILI]	
+
+
+
+
+Full list of subgraphs size 3 ids:
+
+	( Total num of different subgraphs size 3 is : 13 )
+
+MOTIF	NREAL	NRAND		NREAL	NREAL	CREAL	UNIQ
+ID		STATS		ZSCORE	PVAL	[MILI]	
+6	254	254.0+-0.0	-0.10	1.000	333.33	170
+
+12	504	503.5+-1.3	0.36	0.870	661.42	72
+
+14	0	0.0+-0.0	888888	1.000	0.00	0
+
+36	0	0.0+-0.0	888888	1.000	0.00	0
+
+38	0	0.0+-0.0	888888	1.000	0.00	0
+
+46	0	0.0+-0.0	888888	1.000	0.00	0
+
+74	0	0.0+-0.0	888888	1.000	0.00	0
+
+78	0	0.0+-0.0	888888	1.000	0.00	0
+
+98	0	0.2+-0.4	-0.36	1.000	0.00	0
+
+102	0	0.0+-0.0	888888	1.000	0.00	0
+
+108	0	0.0+-0.0	888888	1.000	0.00	0
+
+110	0	0.0+-0.0	888888	1.000	0.00	0
+
+238	0	0.0+-0.0	888888	1.000	0.00	0
+
+
+
+ (Application total runtime was:   18.0 seconds.)
+
+ (Real network processing runtime was:    0.0 seconds.)
+
+ (Single Random network processing runtime was:    0.2 seconds.)

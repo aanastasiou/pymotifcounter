@@ -1,0 +1,14 @@
+calc Z-Score
+gID:   6  freq:    80  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.16393  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  12  freq:   103  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.21107  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  14  freq:   105  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.21516  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  36  freq:    61  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.12500  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  38  freq:    13  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.02664  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  46  freq:    15  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.03074  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  74  freq:    69  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.14139  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  78  freq:    12  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.02459  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID:  98  freq:     1  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.00205  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID: 102  freq:     5  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.01025  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID: 108  freq:     7  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.01434  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID: 110  freq:    12  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.02459  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
+gID: 238  freq:     5  ave_rand_freq:     -nan (sd:   -nan)  conc: 0.01025  ave_rand_conc: -nan (sd: -nan)  f-ZScore:   -nan  f-pValue: -nan  c-ZScore:   -nan  c-pValue: -nan
