@@ -40,8 +40,9 @@ class MotifCounter
     return a MotifResult   
 
 """    
-from dataclasses import dataclass
 import re
+import networkx
+import typing
 
 class PyMotifCounterException(Exception):
     pass
@@ -49,24 +50,30 @@ class PyMotifCounterException(Exception):
 class PyMotifCounterException_InvalidParamValue(PyMotifCounterException):
     pass
 
-@dataclass(repr=False)
 class Parameter:
     """
     Represents a parameter that is used to pass data to an external program.
     """
-    name: str
-    long_name: str
-    help_str: str
-    validation_expr: re.Pattern
-    is_required: bool
-    param_value: str = None
-    
+    def __init__(self,name, \
+                 alias = none, \
+                 is_required = False, \
+                 help_str = None, \
+                 validation_expr = None, \
+                 default_value = None):
+        self._value = None
+        self._name = name
+        self._alias = alias
+        self._is_required = is_required
+        self._help_str = help_str
+        self._validation_expr = validation_expr
+        self._default_value = default_value
+
     def _validate(self):
         """
         Ensures that the parameter conforms to its specification
         """
-        if self.validation_expr.match(str(self.param_value)) is None and self.is_required:
-            raise PyMotifCounterException_InvalidParamValue(f"Expected {self.validation_expr}, received {self.param_value}")
+        if self._validation_expr.match(str(self._value)) is None and self._is_required:
+            raise PyMotifCounterException_InvalidParamValue(f"Expected {self._validation_expr}, received {self._value}")
         else:
             return True
         
@@ -75,7 +82,7 @@ class Parameter:
             return self.__repr__()
             
     def __repr__(self):
-        return f"-{self.name} {str(self.param_value)}"
+        return f"-{self._name} {str(self._value)}"
         
 class MotifCountResultBase:
     def __init__(self, ctx):
@@ -105,40 +112,43 @@ class MotifCountResultBase:
             # identified_motifs[an_item["graphID"]] = an_item["G"]
 
         
-
-@dataclass(repr=False)
 class PyMotifCounterProcessBase:
     """
     Represents an external process.
     """
-    parameters: list[Parameter]
-    binarylocation: str
+    
+    def __init__(self, parameters = None, binary_location = None):
+        self._parameters = parameters
+        self._binary_location = binary_location
+        
+    def add_parameter(a_param):
+        self._parameters.append(a_param)
+        return self                
     
     def _before_run(self, a_graph):
         """
         Constructs a process context for a particular run.
+        
+        Notes:
+            * Typically, obtain a network representation and add it to the context.
         """
-        # # Obtain network representation
-        # # First of all, you have to encode the node ID to a number. NetMODE works only with numeric nodes
-        # nodeid_to_num = dict(zip(G.nodes(), range(1, G.number_of_nodes()+1)))
-        # num_to_noded = {value:key for key, value in nodeid_to_num.items()}
-        # # Create the edge list, translate node ids and convert to string data in one call.
-        # netmode_input = f"{G.number_of_nodes()}\n" + "".join(map(lambda x:f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n", networkx.to_edgelist(G)))
         return None
         
     def _run(self, ctx, a_graph):
         """
         Actually calls the external binary and adds the return value to the context
+        
+        Notes:
+            * Typically, create the process object and pass at least the network to it.
         """
-        # # Create the process object
-        # p = subprocess.Popen([f"{self._netmode_binary_dir}NetMODE", "-k", f"{self._knodesize}", "-e", f"{self._edge_random_method}", "-c", f"{self._nrandom}"], universal_newlines=True, stdin = subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # # Call the process
-        # out, err = p.communicate(input = netmode_input, timeout=320)
         return ctx
         
     def _after_run(self, ctx, a_graph):
         """
         Performs any clean up required and returns the context.
+        
+        Notes:
+            * Typically, erase any intermediate files if they were created anywhere else than the tmp/ folder
         """
         return ctx
     
@@ -150,16 +160,30 @@ class PyMotifCounterProcessBase:
         ctx = self._run(ctx, a_graph)
         ctx = after_run(ctx, a_graph) #ctx must also contain the entire file returned by the algorithm
         return MotifCountResultBase(ctx)  
-
-
-class PyMotifNetMODECounter(PyMotifCounterProcessBase):
-    """
-    Represents a NetMODE call.
-    """
+        
+class PyMotifCounterNetMode(PyMotifCounterProcessBase):
     def __init__(self):
-        self.parameters.append(Parameter(name="k", help_str="Motif size", validation_exr=re.compile("3|4|5
+        super().__init__()
+        self.add_parameter(Parameter(name="s", \
+                                     long_name="specify", \
+                                     help_str="Specify length", \
+                                     validation_expr=re.compile("[0-9]+")))
+                                     
+
+
+        
+
+# class PyMotifNetMODECounter(PyMotifCounterProcessBase):
+    # """
+    # Represents a NetMODE call.
+    # """
+    # def __init__(self):
+        # self.parameters.append(Parameter(name="k", help_str="Motif size", validation_exr=re.compile("3|4|5
+
 if __name__ == "__main__":
-    v1 = Parameter(name="s", long_name="specify", help_str="Specify length", validation_expr=re.compile("[0-9]+"), is_required=False, param_value=23)
+    # v1 = Parameter(name="s", long_name="specify", help_str="Specify length", validation_expr=re.compile("[0-9]+"), is_required=False, param_value=23)
+    # q = PyMotifCounterProcessCommon()
+    q = PyMotifCounterProcessCommon()
     
     
     
