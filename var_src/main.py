@@ -101,19 +101,30 @@ class Parameter:
         
 
 class PyMotifCounterResultBase:
+    """
+    Transforms the output of a motif counter to a computable object (usually a pandas DataFrame).
+    """
     def __init__(self):
         pass
         
-    def __call__(self, a_ctx, a_graph):
+    def __call__(self, a_ctx):
         """
         Actually performs the conversion and returns a dataframe of results.
         """
         return None
-
-       
+        
+class PyMotifCounterNetworkRepBase:
+    """
+    Transforms any given networkx graph to the representation expected by a given motif counting algorithm.
+    """
+                    
+    def __call__(self, a_graph):
+        return None
+        
+          
 class PyMotifCounterProcessBase:
     """
-    Represents an external process.
+    Represents an external motif counting process.
     """
     
     def __init__(self, parameters = {}, binary_location = None):
@@ -123,7 +134,9 @@ class PyMotifCounterProcessBase:
             
         self._parameters = parameters
         self._binary_location = binary_location
-        self._result_transformer = PyMotifCounterResultBase() 
+        self._input_transformer = PyMotifCounterNetworkRepBase() 
+        self._output_transformer = PyMotifCounterResultBase() 
+        
         
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or a_param._alias in self._parameters:
@@ -163,16 +176,23 @@ class PyMotifCounterProcessBase:
             a_param_value._validate()
         return self
         
-    def _before_run(self, a_graph):
+    def _transform_network(self, a_graph):
+        """
+        Transforms a given networkx graph to the intermediate representation expected 
+        by a given algorithm.
+        """
+        return self._input_transformer(a_graph)
+        
+    def _before_run(self, ctx):
         """
         Constructs a process context for a particular run.
         
         Notes:
             * Typically, obtain a network representation and add it to the context.
         """
-        return None
+        return ctx
         
-    def _run(self, ctx, a_graph):
+    def _run(self, ctx):
         """
         Actually calls the external binary and adds the return value to the context
         
@@ -181,7 +201,7 @@ class PyMotifCounterProcessBase:
         """
         return ctx
         
-    def _after_run(self, ctx, a_graph):
+    def _after_run(self, ctx):
         """
         Performs any clean up required and returns the context.
         
@@ -193,12 +213,24 @@ class PyMotifCounterProcessBase:
     def __call__(self, a_graph):
         """
         Kickstarts the whole binary calling process.
-        """            
+        """
+        # Make sure that all parameters have valid values according to the underlying
+        # motif counting algorithm.
         self._validate_parameters()
-        ctx = self._before_run(a_graph)
-        ctx = self._run(ctx, a_graph)
-        ctx = self._after_run(ctx, a_graph) #ctx must also contain the entire file returned by the algorithm
-        return self._result_transformer(ctx, a_graph)
+        # Transform a given network to the representation expected by the underlying 
+        # motif counting algorithm.
+        transformed_network = self._transform_network(a_graph)
+        ctx = {}
+        ctx.update({"transformed_graph":transformed_network, \
+                    "original_graph":a_graph})
+        # Prepare...
+        ctx = self._before_run(ctx)
+        # ...execute...
+        ctx = self._run(ctx)        
+        # ...clean up.
+        ctx = self._after_run(ctx) # ctx must also contain the entire file returned by the algorithm
+        # Transform the output to a computable form
+        return self._output_transformer(ctx)
 
         
 class PyMotifCounterResultNetMODE(PyMotifCounterResultBase):
@@ -229,7 +261,7 @@ class PyMotifCounterResultNetMODE(PyMotifCounterResultBase):
     def __init__(self):
         self._parser = self._get_parser()
         
-    def __call__(self, a_ctx, a_graph):
+    def __call__(self, a_ctx):
         # Process theoutput (if succesfull)
         # TODO:HIGH, need to inspect the `err` and raise appropriate errors
         outputData = self._parser.parseString(a_ctx["proc_response"])
@@ -254,12 +286,24 @@ class PyMotifCounterResultNetMODE(PyMotifCounterResultBase):
         # for an_item in parsed_adjacency_results:
             # identified_motifs[an_item["graphID"]] = an_item["G"]
         
+class PyMotifCounterNetworkNetMODERep(PyMotifCounterNetworkRepBase):
+    def __call__(self, a_graph):
+        # Obtain network representation
+        # First of all, encode the node ID to a number. NetMODE works only with numeric nodes
+        nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes()+1)))
+        num_to_noded = {value:key for key, value in nodeid_to_num.items()}
+        # Create the edge list, translate node ids and convert to string data in one call.
+        return f"{a_graph.number_of_nodes()}\n" + "".join(map(lambda x:f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n", networkx.to_edgelist(a_graph)))
+
+
 class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
     def __init__(self):
         # Build the base model
         super().__init__(binary_location="../binaries/NetMODE/NetMODE")
+        # Exchange the input transformer
+        self._input_transformer = PyMotifCounterNetworkNetMODERep()
         # Exchange the result transformer
-        self._result_transformer = PyMotifCounterResultNetMODE()
+        self._output_transformer = PyMotifCounterResultNetMODE()
         # Add the right parameters        
         self.add_parameter(Parameter(name="k", \
                                      alias="motif_size", \
@@ -272,16 +316,7 @@ class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
         self.set_parameter_value("k", 3)
         self.set_parameter_value("c", 0)
                                      
-    def _before_run(self, a_graph):
-        # Obtain network representation
-        # First of all, encode the node ID to a number. NetMODE works only with numeric nodes
-        nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes()+1)))
-        num_to_noded = {value:key for key, value in nodeid_to_num.items()}
-        # Create the edge list, translate node ids and convert to string data in one call.
-        netmode_input = f"{a_graph.number_of_nodes()}\n" + "".join(map(lambda x:f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n", networkx.to_edgelist(a_graph)))
-        return {"edge_list":netmode_input}
-        
-    def _run(self, ctx, a_graph):
+    def _run(self, ctx):
         # Group parameters
         all_param_values = set(self._parameters.values())
         p_params = []
@@ -292,15 +327,15 @@ class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
         # p = subprocess.Popen([f"{self._binary_location}NetMODE", "-k", f"{self._knodesize}", "-e", f"{self._edge_random_method}", "-c", f"{self._nrandom}"], universal_newlines=True, stdin = subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin = subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # Call the process
-        out, err = p.communicate(input = ctx["edge_list"], timeout=320)
+        out, err = p.communicate(input = ctx["transformed_graph"], timeout=320)
         
         ret_ctx = {}
         ret_ctx.update(ctx)
         ret_ctx.update({"proc_response":out, \
-                        "proc_error":err})
+                        "proc_error":err})        
         return ret_ctx
         
-    def _after_run(self, ctx, a_graph):
+    def _after_run(self, ctx):
         """
         Performs any cleanup after the process has run and produced results.
         
@@ -315,7 +350,6 @@ class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
         return ctx
 
 if __name__ == "__main__":
-    # v1 = Parameter(name="s", long_name="specify", help_str="Specify length", validation_expr=re.compile("[0-9]+"), is_required=False, param_value=23)
     q = PyMotifCounterNetMODE()
     # q = PyMotifCounterProcessCommon()
     g = networkx.watts_strogatz_graph(64,4,0.8)
