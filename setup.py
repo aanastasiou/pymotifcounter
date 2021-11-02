@@ -14,6 +14,7 @@ setup(
     license='',
     packages=find_packages(exclude=('test', 'test.*')),
     keywords='',
+    data_files = [("binaries",["binaries/NetMODE/NetMODE"]),],
     # scripts=['scripts/neomodel_install_labels', 'scripts/neomodel_remove_labels'],
     # setup_requires=['pytest-runner'] if any(x in ('pytest', 'test') for x in sys.argv) else [],
     # tests_require=['pytest', 'shapely', 'neobolt'],

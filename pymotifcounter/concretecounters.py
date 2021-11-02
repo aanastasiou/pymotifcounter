@@ -11,6 +11,7 @@ import networkx
 import subprocess
 import pyparsing
 import pandas
+from .abstractcounter import *
 
 
 class PyMotifCounterResultNetMODE(PyMotifCounterResultBase):
@@ -79,7 +80,7 @@ class PyMotifCounterNetworkNetMODERep(PyMotifCounterNetworkRepBase):
 class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
     def __init__(self):
         # Build the base model
-        super().__init__(binary_location="../binaries/NetMODE/NetMODE")
+        super().__init__(binary_location="NetMODE")
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterNetworkNetMODERep()
         # Exchange the result transformer

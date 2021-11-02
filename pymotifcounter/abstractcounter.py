@@ -14,7 +14,7 @@ import networkx
 import subprocess
 import pyparsing
 import pandas
-import .exceptions
+from .exceptions import *
 
 
 class Parameter:
