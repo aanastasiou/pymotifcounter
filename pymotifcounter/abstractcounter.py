@@ -65,19 +65,30 @@ class Parameter:
         
 
 class PyMotifCounterResultBase:
+    """
+    Transforms the output of a motif counter to a computable object (usually a pandas DataFrame).
+    """
     def __init__(self):
         pass
         
-    def __call__(self, a_ctx, a_graph):
+    def __call__(self, a_ctx):
         """
         Actually performs the conversion and returns a dataframe of results.
         """
         return None
-
-       
+        
+class PyMotifCounterNetworkRepBase:
+    """
+    Transforms any given networkx graph to the representation expected by a given motif counting algorithm.
+    """
+                    
+    def __call__(self, a_graph):
+        return None
+        
+          
 class PyMotifCounterProcessBase:
     """
-    Represents an external process.
+    Represents an external motif counting process.
     """
     
     def __init__(self, parameters = {}, binary_location = None):
@@ -87,7 +98,9 @@ class PyMotifCounterProcessBase:
             
         self._parameters = parameters
         self._binary_location = binary_location
-        self._result_transformer = PyMotifCounterResultBase() 
+        self._input_transformer = PyMotifCounterNetworkRepBase() 
+        self._output_transformer = PyMotifCounterResultBase() 
+        
         
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or a_param._alias in self._parameters:
@@ -127,16 +140,23 @@ class PyMotifCounterProcessBase:
             a_param_value._validate()
         return self
         
-    def _before_run(self, a_graph):
+    def _transform_network(self, a_graph):
+        """
+        Transforms a given networkx graph to the intermediate representation expected 
+        by a given algorithm.
+        """
+        return self._input_transformer(a_graph)
+        
+    def _before_run(self, ctx):
         """
         Constructs a process context for a particular run.
         
         Notes:
             * Typically, obtain a network representation and add it to the context.
         """
-        return None
+        return ctx
         
-    def _run(self, ctx, a_graph):
+    def _run(self, ctx):
         """
         Actually calls the external binary and adds the return value to the context
         
@@ -145,7 +165,7 @@ class PyMotifCounterProcessBase:
         """
         return ctx
         
-    def _after_run(self, ctx, a_graph):
+    def _after_run(self, ctx):
         """
         Performs any clean up required and returns the context.
         
@@ -157,11 +177,21 @@ class PyMotifCounterProcessBase:
     def __call__(self, a_graph):
         """
         Kickstarts the whole binary calling process.
-        """            
+        """
+        # Make sure that all parameters have valid values according to the underlying
+        # motif counting algorithm.
         self._validate_parameters()
-        ctx = self._before_run(a_graph)
-        ctx = self._run(ctx, a_graph)
-        ctx = self._after_run(ctx, a_graph) #ctx must also contain the entire file returned by the algorithm
-        return self._result_transformer(ctx, a_graph)
-    
-    
+        # Transform a given network to the representation expected by the underlying 
+        # motif counting algorithm.
+        transformed_network = self._transform_network(a_graph)
+        ctx = {}
+        ctx.update({"transformed_graph":transformed_network, \
+                    "original_graph":a_graph})
+        # Prepare...
+        ctx = self._before_run(ctx)
+        # ...execute...
+        ctx = self._run(ctx)        
+        # ...clean up.
+        ctx = self._after_run(ctx) # ctx must also contain the entire file returned by the algorithm
+        # Transform the output to a computable form
+        return self._output_transformer(ctx)
