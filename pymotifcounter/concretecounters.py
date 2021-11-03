@@ -1,5 +1,7 @@
 """
 
+    Implements the NetMODE concrete counter.
+
 
 :author: Athanasios Anastasiou
 :date: Nov 2021
@@ -12,6 +14,7 @@ import subprocess
 import pyparsing
 import pandas
 from .abstractcounter import *
+from .counter_mfinder import *
 
 
 class PyMotifCounterResultNetMODE(PyMotifCounterResultBase):
