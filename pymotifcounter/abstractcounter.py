@@ -1,6 +1,6 @@
 """
 
-    Base objects outlining the functionality of PyMotifCounter
+Base objects outlining the functionality of PyMotifCounter
     
     
 :author: Athanasios Anastasiou
