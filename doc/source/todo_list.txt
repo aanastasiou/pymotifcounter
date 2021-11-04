@@ -1,0 +1,5 @@
+TODO List as of Thu 4 Nov 16:39:20 UTC 2021
+../pymotifcounter/concretecounters.py:50 TODO:HIGH, need to inspect the `err` and raise appropriate errors
+../pymotifcounter/concretecounters.py:86 TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.
+../pymotifcounter/counter_mfinder.py:48 # TODO:HIGH, need to inspect the `err` and raise appropriate errors
+../pymotifcounter/counter_mfinder.py:84 # TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.

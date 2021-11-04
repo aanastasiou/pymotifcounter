@@ -39,6 +39,7 @@ A typical example of its usage is as follows: ::
 
    motivation
    design_notes
+   current_todos
    api
 
 

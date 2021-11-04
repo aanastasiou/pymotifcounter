@@ -10,7 +10,7 @@
 
 
 ``concretecounters`` Module
-==========================
+===========================
 
 .. automodule:: pymotifcounter.concretecounters
     :members:
