@@ -40,6 +40,73 @@ The following tools are included:
         * `One <https://github.com/nkahmed/PGD>`_ 
         * `Two <http://nesreenahmed.com/graphlets/>`_ 
         * `Three <http://graphlets.org/>`_
+        
+        
+Overall design
+--------------
+
+.. mermaid::
+    :caption: A high level view of the project's design.
+    
+    
+    classDiagram
+        class Parameter
+        
+        class PyMotifCounterResultBase
+        
+        class PyMotifCounterNetworkRepBase
+        
+        
+        class PyMotifCounterProcessBase
+        PyMotifCounterProcessBase : -str _binary_location
+        
+        PyMotifCounterProcessBase o-- PyMotifCounterNetworkRepBase:_input_transformer
+        PyMotifCounterProcessBase o-- PyMotifCounterResultBase:_output_transformer
+        PyMotifCounterProcessBase *-- "0..*" Parameter:_parameters
+        
+        
+Typical process flowchart
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. mermaid::
+    :caption: Typical flowchart of ``PyMotifCounter`` operation.
+    
+    flowchart TB
+        A["Network (networkx)"];
+        B["Transform to method (process) dependent representation"];
+        C["Check parameter validity"]
+        D["Run external process"];
+        E["Collect output"]
+        F["Transform output to computable form (DataFrame)"];
+        G["Return results (DataFrame)"];
+        
+        subgraph Python
+        A --> B
+        subgraph PyMotifCounter
+        B --> C
+        E --> F
+        end
+        F --> G        
+        end
+        
+        subgraph System
+        C --> D
+        D --> E        
+        end
+        
+        style A fill:#ddcbbc
+        style G fill:#ddcbbc
+        style D fill:#E83B3C, color:#BBBBBB
+        
+        style B fill:#2b9c90
+        style C fill:#2b9c90
+        style E fill:#2b9c90
+        style F fill:#2b9c90
+        
+        
+        
+        
+        
 
 
 Parameters
@@ -85,7 +152,6 @@ Requirements
 1. Must be possible to pass / define other parameters that a program might be accepting
     * Consider the way ``click`` options work
     
-2. 
       
 
 Inputs
