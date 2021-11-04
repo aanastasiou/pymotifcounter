@@ -81,10 +81,10 @@ class PyMotifCounterNetworkNetMODERep(PyMotifCounterNetworkRepBase):
 
 
 class PyMotifCounterNetMODE(PyMotifCounterProcessBase):
-    def __init__(self):
+    def __init__(self, binary_location = None):
         # Build the base model
         # TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.
-        super().__init__(binary_location="NetMODE")
+        super().__init__(binary_location=binary_location)
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterNetworkNetMODERep()
         # Exchange the result transformer
