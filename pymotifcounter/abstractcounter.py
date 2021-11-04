@@ -91,12 +91,12 @@ class PyMotifCounterProcessBase:
     Represents an external motif counting process.
     """
     
-    def __init__(self, parameters = {}, binary_location = None):
+    def __init__(self, parameters = None, binary_location = None):
         if binary_location is not None:
             if not os.path.exists(binary_location):
                 raise ValueError(f"{binary_location} does not exist")
             
-        self._parameters = parameters
+        self._parameters = parameters or {}
         self._binary_location = binary_location
         self._input_transformer = PyMotifCounterNetworkRepBase() 
         self._output_transformer = PyMotifCounterResultBase() 
@@ -104,7 +104,7 @@ class PyMotifCounterProcessBase:
         
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or a_param._alias in self._parameters:
-            raise ValueError(f"Parameter {a_param._name / a_param._alias} already exists.")
+            raise ValueError(f"Parameter {a_param._name} / {a_param._alias} already exists.")
             
         self._parameters[a_param._name] = a_param
         self._parameters[a_param._alias] = a_param
