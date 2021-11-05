@@ -1,4 +1,4 @@
-from pymotifcounter.concretecounters import PyMotifCountermfinder, PyMotifCounterNetMODE
+from pymotifcounter.concretecounters import PyMotifCounterMfinder, PyMotifCounterNetMODE
 import networkx
 #import logging
 
@@ -9,4 +9,4 @@ if __name__ == "__main__":
     
     g = networkx.watts_strogatz_graph(100,8,0.9)
     z_netmode = PyMotifCounterNetMODE(binary_location = "binaries/NetMODE/NetMODE")(g)
-    z_mfinder = PyMotifCountermfinder(binary_location = "binaries/mfinder/mfinder1.21/mfinder")(g)
+    z_mfinder = PyMotifCounterMfinder(binary_location ="binaries/mfinder/mfinder1.21/mfinder")(g)

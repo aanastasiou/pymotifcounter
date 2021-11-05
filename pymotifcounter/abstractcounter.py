@@ -17,16 +17,16 @@ import pandas
 from .exceptions import *
 
 
-class Parameter:
+class PyMotifCounterParameter:
     """
     Represents a parameter that is used to pass data to an external program.
     """
-    def __init__(self,name, \
-                 alias = None, \
-                 is_required = False, \
-                 help_str = None, \
-                 validation_expr = None, \
-                 default_value = None):
+    def __init__(self, name,
+                 alias=None,
+                 is_required=False,
+                 help_str=None,
+                 validation_expr=None,
+                 default_value=None):
         self._value = None
         self._name = name
         self._alias = alias
@@ -40,7 +40,7 @@ class Parameter:
         Checks that a given value could be a valid value for this parameter.
         """
         if self._validation_expr.match(str(a_value)) is None and self._is_required:
-            raise PyMotifCounterException_InvalidParamValue(f"Expected {self._validation_expr}, received {self._value}")
+            raise PyMotifCounterExceptionInvalidParamValue(f"Expected {self._validation_expr}, received {self._value}")
         else:
             return True
         
@@ -64,7 +64,7 @@ class Parameter:
         return ["-"+self._name, str(self._value)]
         
 
-class PyMotifCounterResultBase:
+class PyMotifCounterOutputTransformerBase:
     """
     Transforms the output of a motif counter to a computable object (usually a pandas DataFrame).
     """
@@ -76,8 +76,9 @@ class PyMotifCounterResultBase:
         Actually performs the conversion and returns a dataframe of results.
         """
         return None
-        
-class PyMotifCounterNetworkRepBase:
+
+
+class PyMotifCounterInputTransformerBase:
     """
     Transforms any given networkx graph to the representation expected by a given motif counting algorithm.
     """
@@ -86,7 +87,7 @@ class PyMotifCounterNetworkRepBase:
         return None
         
           
-class PyMotifCounterProcessBase:
+class PyMotifCounterBase:
     """
     Represents an external motif counting process.
     """
@@ -98,9 +99,8 @@ class PyMotifCounterProcessBase:
             
         self._parameters = parameters or {}
         self._binary_location = binary_location
-        self._input_transformer = PyMotifCounterNetworkRepBase() 
-        self._output_transformer = PyMotifCounterResultBase() 
-        
+        self._input_transformer = PyMotifCounterInputTransformerBase()
+        self._output_transformer = PyMotifCounterOutputTransformerBase()
         
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or a_param._alias in self._parameters:

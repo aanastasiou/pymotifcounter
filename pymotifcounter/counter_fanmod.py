@@ -1,6 +1,5 @@
 """
-
-    Implements the fanmod_cmd concrete counter.
+Implements the fanmod_cmd concrete counter.
 
 :author: Athanasios Anastasiou
 :date: Nov 2021
@@ -23,14 +22,15 @@ from .abstractcounter import *
     # def __call__(self, a_ctx):
         # return a_ctx["proc_response"]
         
-class PyMotifCounterNetworkfanmodRep(PyMotifCounterNetworkRepBase):
+class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
     def __call__(self, a_graph):
         # Obtain network representation
         # First of all, encode the node ID to a number.
         nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes()+1)))
-        num_to_noded = {value:key for key, value in nodeid_to_num.items()}
+        num_to_noded = {value: key for key, value in nodeid_to_num.items()}
         # Create the edge list
-        return "".join(map(lambda x:f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\t1\n", networkx.to_edgelist(a_graph)))
+        return "".join(map(lambda x: f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\t1\n",
+                           networkx.to_edgelist(a_graph)))
 
 
 # class PyMotifCounterfanmod(PyMotifCounterProcessBase):
