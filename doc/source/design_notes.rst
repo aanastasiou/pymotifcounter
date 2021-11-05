@@ -103,11 +103,21 @@ Typical process flowchart
         style E fill:#2b9c90
         style F fill:#2b9c90
         
-        
-        
-        
-        
+High level overview
+^^^^^^^^^^^^^^^^^^^
 
+.. mermaid::
+    :caption: High level class overview
+
+    graph LR
+        A("Input <br/> (A Networkx Graph)")
+        B("External Process <br/> (An executable)")
+        C("Parameters <br/> (Motif size, sampling method, ...)")
+        D("Output <br/> (Motif enumeration as DataFrame)")
+
+        A --> B
+        C --> B
+        B --> D
 
 Parameters
 ----------
