@@ -11,3 +11,4 @@ PyMotifCounter's concrete motif enumerators.
 
 from .counter_netmode import *
 from .counter_mfinder import *
+from .counter_fanmod import *

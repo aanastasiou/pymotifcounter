@@ -1,12 +1,10 @@
 """
-
 Base objects outlining the functionality of PyMotifCounter
-    
+
     
 :author: Athanasios Anastasiou
 :date: Oct 2021
-
-"""    
+"""
 
 import os
 import re
@@ -26,7 +24,8 @@ class PyMotifCounterParameter:
                  is_required=False,
                  help_str=None,
                  validation_expr=None,
-                 default_value=None):
+                 default_value=None,
+                 is_flag=False):
         self._value = None
         self._name = name
         self._alias = alias
@@ -34,15 +33,28 @@ class PyMotifCounterParameter:
         self._help_str = help_str
         self._validation_expr = validation_expr
         self._default_value = default_value
+        self._is_flag = is_flag
 
     def _check_value(self, a_value):
         """
-        Checks that a given value could be a valid value for this parameter.
+        Checks that the current parameter value is valid for this parameter's use context.
+
+        :param a_value: The value to check for validity
+        :type a_value: Any
+        :returns: True
+        :rtype: bool
+        :raises: Validation exception
+
         """
-        if self._validation_expr.match(str(a_value)) is None and self._is_required:
-            raise PyMotifCounterExceptionInvalidParamValue(f"Expected {self._validation_expr}, received {self._value}")
+        if a_value is not None or self._is_required:
+            if self._validation_expr.match(str(a_value)) is None:
+                raise PyMotifCounterExceptionInvalidParamValue(
+                    f"Expected {self._validation_expr}, received {self._value}")
         else:
-            return True
+            # TODO: HIGH, incorporate to the exception hierarchy
+            raise Exception(f"Parameter {self._name} / {self._alias} is required")
+
+        return True
         
     def _validate(self):
         """
@@ -60,8 +72,25 @@ class PyMotifCounterParameter:
             return self.__repr__()
             
     def __repr__(self):
-        # return f"-{self._name} {str(self._value)}"
-        return ["-"+self._name, str(self._value)]
+        """
+        Packs the parameter in the right representation expected by ``subprocess.popen``
+
+        :return: An ``n`` element list depending on the parameter type.
+        :rtype: list
+        """
+        # Assume that the value is optional...
+        value_to_return = []
+        if self._value is not None or self._is_required:
+            # If it is required (it cannot be None) or if it is not None anyway then assume that the value is
+            # a flag (and if it is a flag a non-zero value would mean that it should be present in the output).
+            value_to_return = [f"-{self._name}"]
+            if not self._is_flag:
+                # If the value is not a flag (but is still required -or has non-None value-) then add the actual value
+                value_to_return += [str(self._value)]
+        # else:
+        #     Raise an exception
+
+        return value_to_return
         
 
 class PyMotifCounterOutputTransformerBase:
@@ -132,7 +161,8 @@ class PyMotifCounterBase:
         if a_param_name_or_alias not in self._parameters:
             raise ValueError(f"Parameter {a_param_name_or_alias} is undefined")
         # Check that the new value is valid.
-        return self._parameters[a_param_name_or_alias]._set_value(a_value)        
+        self._parameters[a_param_name_or_alias]._set_value(a_value)
+        return self
         
     def _validate_parameters(self):
         param_values = set(self._parameters.values())
