@@ -13,6 +13,7 @@ import pyparsing
 import pandas
 from .abstractcounter import *
 
+# TODO, HIGH: Document the concrete classes
 
 class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase):
     @staticmethod
