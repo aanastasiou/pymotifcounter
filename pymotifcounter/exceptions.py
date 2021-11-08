@@ -10,5 +10,5 @@ class PyMotifCounterException(Exception):
     pass
 
 
-class PyMotifCounterExceptionInvalidParamValue(PyMotifCounterException):
+class PyMotifCounterExceptionParameterError(PyMotifCounterException):
     pass
