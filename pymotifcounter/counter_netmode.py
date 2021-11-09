@@ -7,6 +7,7 @@ Implements the NetMODE concrete counter.
 
 import os
 import re
+import shutil
 import networkx
 import subprocess
 import pyparsing
@@ -96,7 +97,8 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
 class PyMotifCounterNetMODE(PyMotifCounterBase):
     def __init__(self, binary_location=None):
         # Build the base model
-        super().__init__(binary_location=binary_location)
+        bin_loc = shutil.which("NetMODE") or ""
+        super().__init__(binary_location=bin_loc)
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterInputTransformerNetMODE()
         # Exchange the result transformer
@@ -105,14 +107,14 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
         self.add_parameter(PyMotifCounterParameter(name="k",
                                                    alias="motif_size",
                                                    help_str="k-node subgraphs (=3,4,5 or 6)",
+                                                   default_value=3,
                                                    validation_expr=re.compile("[3-6]")))
 
         self.add_parameter(PyMotifCounterParameter(name="c",
                                                    alias="n_random",
                                                    help_str="Number of comparison graphs (An integer in [0, 2^31))",
+                                                   default_value=0,
                                                    validation_expr=re.compile("[0-9]+")))
-        self.set_parameter_value("k", 3)
-        self.set_parameter_value("c", 0)
 
     def _run(self, ctx):
         """

@@ -8,6 +8,7 @@ Implements the mfinder concrete counter.
 import os
 import re
 import tempfile
+import shutil
 import networkx
 import subprocess
 import pyparsing
@@ -92,7 +93,8 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
         # TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
         # TODO: HIGH, the validation can be a function
         # TODO: MID, add the output file name and use it when it is specified
-        super().__init__(binary_location=binary_location or "mfinder")
+        bin_loc = shutil.which("mfinder") or ""
+        super().__init__(binary_location=bin_loc)
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterInputTransformerMfinder()
         # Exchange the result transformer
@@ -101,13 +103,14 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
         self.add_parameter(PyMotifCounterParameter(name="s",
                                                    alias="motif_size",
                                                    help_str="Motif size to search",
+                                                   default_value=3,
                                                    validation_expr=re.compile("[3-4]")))
+
         self.add_parameter(PyMotifCounterParameter(name="r",
                                                    alias="n_random",
                                                    help_str="Number of random networks to generate",
+                                                   default_value=0,
                                                    validation_expr=re.compile("[0-9]+")))
-        self.set_parameter_value("s", 3)
-        self.set_parameter_value("r", 0)
                                      
     def _run(self, ctx):
         """

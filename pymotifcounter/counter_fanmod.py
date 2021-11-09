@@ -7,6 +7,7 @@ Implements the fanmod_cmd concrete counter.
 
 import os
 import re
+import shutil
 import tempfile
 import networkx
 import subprocess
@@ -92,12 +93,13 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterFanmod(PyMotifCounterBase):
-    def __init__(self, binary_location=None):
+    def __init__(self):
         # Build the base model
-        # TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
         # TODO: HIGH, the validation can be a function
         # TODO: MID, add the output file name and use it when it is specified
-        super().__init__(binary_location=binary_location or "fanmod_cmd")
+        # Try to auto-discover the location of the binary here
+        bin_loc = shutil.which("fanmod_cmd") or ""
+        super().__init__(binary_location=bin_loc)
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterInputTransformerFanmod()
         # Exchange the result transformer
@@ -108,11 +110,13 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
         self.add_parameter(PyMotifCounterParameter(name="s",
                                                    alias="motif_size",
                                                    help_str="Motif size to search",
+                                                   default_value=3,
                                                    validation_expr=re.compile("[3-4]")))
         # Number of random networks to establish significance over.
         self.add_parameter(PyMotifCounterParameter(name="r",
                                                    alias="n_random",
                                                    help_str="Number of random networks to generate",
+                                                   default_value=0,
                                                    validation_expr=re.compile("[0-9]+")))
         # TODO: LOW, if the default value is bool then the parameter is flag.
         # TODO: HIGH, Change the validation here from numeric to proper bool when you fix the validation to be performed by a function
@@ -125,10 +129,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                    default_value=1,
                                                    is_flag=True,
                                                    is_required=True))
-        self.set_parameter_value("s", 3)
-        self.set_parameter_value("r", 0)
-        self.set_parameter_value("d", 1)
-                                     
+
     def _run(self, ctx):
         # Group parameters
         # TODO: HIGH, this step can be abstracted
