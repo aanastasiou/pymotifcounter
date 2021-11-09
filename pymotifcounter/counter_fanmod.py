@@ -94,7 +94,6 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 class PyMotifCounterFanmod(PyMotifCounterBase):
     def __init__(self, binary_location=None):
         # Build the base model
-        # TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.
         # TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
         # TODO: HIGH, the validation can be a function
         # TODO: MID, add the output file name and use it when it is specified
@@ -115,7 +114,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                    alias="n_random",
                                                    help_str="Number of random networks to generate",
                                                    validation_expr=re.compile("[0-9]+")))
-        # TODO: HIGH, if the default value is bool then the parameter is flag.
+        # TODO: LOW, if the default value is bool then the parameter is flag.
         # TODO: HIGH, Change the validation here from numeric to proper bool when you fix the validation to be performed by a function
         # TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
         # Whether the network is directed (by default it should be considered directed)

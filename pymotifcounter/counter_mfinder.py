@@ -89,7 +89,6 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
 class PyMotifCounterMfinder(PyMotifCounterBase):
     def __init__(self, binary_location = None):
         # Build the base model
-        # TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.
         # TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
         # TODO: HIGH, the validation can be a function
         # TODO: MID, add the output file name and use it when it is specified
@@ -127,7 +126,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
             p_params.extend(a_param_value())
             
         # TODO: LOW, it is probably easy to make mfinder work with stdin/stdout as a binary
-        # TODO: HIGH, this needs exception handling
+        # TODO: HIGH, Add some kind of prefix/suffix identification to the temporary files that are created.
         # mfinder works off of a file, so first save the input representation down to a file in temporary storage
         tmp_fileno, tmp_filename = tempfile.mkstemp()
         ctx["temporary_filename"] = tmp_filename

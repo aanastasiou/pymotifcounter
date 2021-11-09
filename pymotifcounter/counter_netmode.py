@@ -96,7 +96,6 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
 class PyMotifCounterNetMODE(PyMotifCounterBase):
     def __init__(self, binary_location=None):
         # Build the base model
-        # TODO: HIGH, if the binary_location is None, this should raise an exception when an attempt is made to run.
         super().__init__(binary_location=binary_location)
         # Exchange the input transformer
         self._input_transformer = PyMotifCounterInputTransformerNetMODE()

@@ -8,35 +8,33 @@ Ensures the functionality of PyMotifCounterParameter.
 import pytest
 import re
 from pymotifcounter.abstractcounter import PyMotifCounterParameter
+from pymotifcounter.exceptions import PyMotifCounterParameterError
 
 
-def test_init():
-    """
-    Instantiation should raise an exception if parameter is required but does not have a default value
-    :return:
-    """
-    # TODO: LOW, Exchange the xception for the right one here.
-    with pytest.raises(Exception):
-        p = PyMotifCounterParameter(name="s", alias="Size", default_value=None, is_required=True)
+def test_init_required_without_validation_rule_error():
+    with pytest.raises(PyMotifCounterParameterError):
+        p = PyMotifCounterParameter(name="s",
+                                    alias="Size")
 
 
-def test_validation_fail():
-    with pytest.raises(Exception):
+def test_init_required_without_default_value_or():
+    with pytest.raises(PyMotifCounterParameterError):
         p = PyMotifCounterParameter(name="s",
                                     alias="Size",
                                     validation_expr=re.compile("[0-9]+"),
-                                    default_value="FAIL", is_required=True)
+                                    default_value=None,
+                                    is_required=True)
 
 
-def test_validation_pass():
-    p = PyMotifCounterParameter(name="s",
-                                alias="Size",
-                                validation_expr=re.compile("[0-9]+"),
-                                default_value=22, is_required=True)
-    assert p._validate() is True
+def test_init_required_with_invalid_default_value_error():
+    with pytest.raises(PyMotifCounterParameterError):
+        p = PyMotifCounterParameter(name="s", alias="Size",
+                                    validation_expr=re.compile("[0-9]+"),
+                                    default_value="FAIL",
+                                    is_required=True)
 
 
-def test_repr_flag_notflag():
+def test_repr_flag_notflag_error():
     p_is_flag = PyMotifCounterParameter(name="s",
                                         alias="Size",
                                         is_flag=True)
@@ -51,12 +49,20 @@ def test_repr_flag_notflag():
     assert p_is_not_flag.__repr__() == ["-s", "22"]
 
 
-def test_set_invalid_value():
+def test_set_invalid_value_error():
+    p = PyMotifCounterParameter(name="s",
+                                alias="Size",
+                                validation_expr=re.compile("[0-9]+"),
+                                default_value=22)
+
+    with pytest.raises(PyMotifCounterParameterError):
+        p._set_value("Wrong")
+
+
+def test_validation_succesful():
     p = PyMotifCounterParameter(name="s",
                                 alias="Size",
                                 validation_expr=re.compile("[0-9]+"),
                                 default_value=22,
-                                is_flag=False)
-
-    with pytest.raises(Exception):
-        p._set_value("Wrong")
+                                is_required=True)
+    assert p._validate() is True

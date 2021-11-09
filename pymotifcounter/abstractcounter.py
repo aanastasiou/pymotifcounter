@@ -21,9 +21,9 @@ class PyMotifCounterParameter:
     """
     def __init__(self, name,
                  alias=None,
+                 validation_expr=None,
                  is_required=True,
                  help_str=None,
-                 validation_expr=None,
                  default_value=None,
                  is_flag=False):
         """
@@ -46,7 +46,6 @@ class PyMotifCounterParameter:
                         command line).
         :type is_flag: bool
         """
-        # TODO: LOW, Need to add the exact exception this raises.
 
         self._value = None
         self._name = name
@@ -57,6 +56,26 @@ class PyMotifCounterParameter:
         self._default_value = default_value
         self._is_flag = is_flag
 
+        if type(self._validation_expr) is not re.Pattern:
+            if not self._is_flag:
+                raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} must specify "
+                                                   f"an appropriate validation expression. "
+                                                   f"Received {self._validation_expr}")
+            else:
+                self._validation_expr = None
+
+        if self._is_required and self._default_value is None:
+            if not self._is_flag:
+                raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
+                                                   f"valid default value.")
+
+        if self._is_required:
+            if not self._is_flag:
+                try:
+                    self._check_value(self._default_value)
+                except PyMotifCounterParameterError:
+                    raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
+                                                       f"valid default value.")
         self._validate()
 
     def _check_value(self, a_value):
@@ -72,11 +91,10 @@ class PyMotifCounterParameter:
         """
         if a_value is not None or self._is_required:
             if not self._is_flag and self._validation_expr.match(str(a_value)) is None:
-                # TODO: HIGH, Validation error, incorporate in the exception hierarchy
-                raise Exception(f"Expected {self._validation_expr}, received {a_value}")
+                raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} "
+                                                   f"expected {self._validation_expr}, received {a_value}")
         else:
-            # TODO: HIGH, incorporate to the exception hierarchy
-            raise Exception(f"Parameter {self._name} / {self._alias} is required.")
+            raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} is required.")
 
         return True
         
@@ -156,10 +174,11 @@ class PyMotifCounterBase:
     Represents an external motif counting process.
     """
     
-    def __init__(self, binary_location, parameters=None):
+    def __init__(self, binary_location="", parameters=None):
         if not os.path.exists(binary_location):
-            raise Exception(f"{binary_location} does not exist")
-            
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Binary location {binary_location} invalid.")
+
+        # TODO: HIGH, Parameters need to be re-iterated to check for duplicates appropriately.
         self._parameters = parameters or {}
         self._binary_location = binary_location
         self._input_transformer = PyMotifCounterInputTransformerBase()
@@ -167,7 +186,8 @@ class PyMotifCounterBase:
         
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or a_param._alias in self._parameters:
-            raise Exception(f"Parameter {a_param._name} / {a_param._alias} already exists.")
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
+                                      f"already defined.")
             
         self._parameters[a_param._name] = a_param
         self._parameters[a_param._alias] = a_param
@@ -181,7 +201,8 @@ class PyMotifCounterBase:
             * The parameter is validated on assignment. On recall, it is assumed that its value is valid.
         """
         if a_param_name_or_alias not in self._parameters:
-            raise Exception(f"Parameter {a_param_name_or_alias} is undefined")
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
+                                      f"undefined.")
         return self._parameters[a_param_name_or_alias]
         
     def set_parameter_value(self, a_param_name_or_alias, a_value):
@@ -193,7 +214,8 @@ class PyMotifCounterBase:
         """
         # Check that the parameter exists.
         if a_param_name_or_alias not in self._parameters:
-            raise Exception(f"Parameter {a_param_name_or_alias} is undefined")
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
+                                      f"undefined.")
         # Set the parameter value, this triggers a validation step as well.
         self._parameters[a_param_name_or_alias]._set_value(a_value)
         return self
