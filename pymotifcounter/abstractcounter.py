@@ -198,7 +198,7 @@ class PyMotifCounterBase:
         Returns the parameter object if it exists.
         """
         if a_param_name_or_alias not in self._parameters:
-            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param_name_or_alias} "
                                       f"undefined.")
         return self._parameters[a_param_name_or_alias]
         

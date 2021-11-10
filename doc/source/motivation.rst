@@ -17,13 +17,13 @@ The motivation to create this project was twofold:
 Why "abstraction"?
 ==================
 
-Suppose that you have a large number of networks whose node id's are arbitrary **strings** (or country names, or EEG
+Suppose that you have a set of networks whose node id's are arbitrary **strings** (or country names, or EEG
 electrode names, or state names or more generally *anything other than an integer id*) and you wanted to see what motifs
 it is composed of. Suppose also that you wanted to perform this enumeration using ``mfinder`` [#]_.
 
 If you have chosen Python as your main "scientific computing" language
-for this project, you would probably have the network in one of the classes of
-the `networkx <https://networkx.org/>`_ package and you would be looking at obtaining the motif enumeration in some
+for this project, you would probably be able to work with the networks using the `networkx <https://networkx.org/>`_
+package and you would be looking at obtaining the motif enumeration in some
 form of **computable** format by which you would be able to incorporate it further in other calculations.
 
 You would now have to typically follow this process to get the motif enumeration:

@@ -35,12 +35,12 @@ A typical example of its usage is as follows: ::
         plt.show()
 
 
-        
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   examples
    motivation
    design_notes
    current_todos

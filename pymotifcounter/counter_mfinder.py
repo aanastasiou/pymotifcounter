@@ -104,7 +104,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                    alias="motif_size",
                                                    help_str="Motif size to search",
                                                    default_value=3,
-                                                   validation_expr=re.compile("[3-4]")))
+                                                   validation_expr=re.compile("[3-8]")))
 
         self.add_parameter(PyMotifCounterParameter(name="r",
                                                    alias="n_random",
