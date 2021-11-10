@@ -24,3 +24,10 @@
     :members:
     
 
+``exceptions`` Module
+===========================
+
+.. automodule:: pymotifcounter.exceptions
+    :members:
+
+
