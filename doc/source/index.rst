@@ -20,6 +20,7 @@ output format to return a **computable form** of the enumeration.
 A typical example of its usage is as follows: ::
 
     from pymotifcounter.concretecounters import PyMotifCounterNetMODE
+    from matplotlib import pyplot as plt
     import networkx
     
     if __name__ == "__main__":
@@ -29,8 +30,11 @@ A typical example of its usage is as follows: ::
         motif_counter = PyMotifCounterNetMODE()
         # Produce the enumeration
         g_motif_count = motif_counter(g)
-        # Examine the enumeration
-        g_motif_counter.head()
+        # Examine the enumeration via a bar plot
+        g_motif_count.plot.bar("gID", "freq");
+        plt.show()
+
+
         
 
 .. toctree::
