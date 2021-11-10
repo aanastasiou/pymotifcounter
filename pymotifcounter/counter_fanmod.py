@@ -131,13 +131,8 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                    is_required=True))
 
     def _run(self, ctx):
-        # Group parameters
-        # TODO: HIGH, this step can be abstracted
-        all_param_values = set(self._parameters.values())
-        p_params = []
-        for a_param_value in all_param_values:
-            p_params.extend(a_param_value())
-
+        # Get the existing parameters
+        p_params = ctx["base_parameters"]
         # TODO: HIGH, this needs exception handling
         # TODO: HIGH, Add a prefix that depends on the binary
         # fanmod_cmd works off of a file, so first save the input representation down to a file in temporary storage
@@ -145,7 +140,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
         ctx["temporary_filename"] = tmp_filename
         # Populate the file with the intermediate representation
         with os.fdopen(tmp_fileno, "wt") as fd:
-            fd.write(ctx["transformed_graph"])
+            fd.write(ctx["base_transformed_graph"])
         # TODO: HIGH, this can become a parameter with a __TEMP__default value
         # Add the input file as a parameter
         p_params += ["-i", tmp_filename]

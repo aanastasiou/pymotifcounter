@@ -116,17 +116,14 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
         """
         Enumerates motifs using mfinder
 
-        :param ctx: Context variable including the "transformed_graph" field that contains the transformed input graph.
+        :param ctx: Context variable including the "base_transformed_graph" field that contains the
+                    transformed input graph.
         :type ctx: dict
         :return: Updated context
         :rtype: dict
         """
-        # Group parameters
-        # TODO: MID, this step can be abstracted
-        all_param_values = set(self._parameters.values())
-        p_params = []
-        for a_param_value in all_param_values:
-            p_params.extend(a_param_value())
+        # Get the existing parameters
+        p_params = ctx["base_parameters"]
             
         # TODO: LOW, it is probably easy to make mfinder work with stdin/stdout as a binary
         # TODO: HIGH, Add some kind of prefix/suffix identification to the temporary files that are created.
@@ -134,7 +131,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
         tmp_fileno, tmp_filename = tempfile.mkstemp()
         ctx["temporary_filename"] = tmp_filename
         with os.fdopen(tmp_fileno, "wt") as fd:
-            fd.write(ctx["transformed_graph"])
+            fd.write(ctx["base_transformed_graph"])
         p_params = [tmp_filename] + p_params
         # Create the process object
         # TODO: HIGH, this needs exception handling for timeout

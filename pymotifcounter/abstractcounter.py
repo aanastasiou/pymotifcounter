@@ -76,7 +76,7 @@ class PyMotifCounterParameter:
                 except PyMotifCounterParameterError:
                     raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
                                                        f"valid default value.")
-        self._validate()
+        self.validate()
 
     def _check_value(self, a_value):
         """
@@ -98,13 +98,13 @@ class PyMotifCounterParameter:
 
         return True
         
-    def _validate(self):
+    def validate(self):
         """
         Ensures that the parameter conforms to its specification
         """
-        return self._check_value(self._get_value())
+        return self._check_value(self.get_value())
         
-    def _set_value(self, a_value):
+    def set_value(self, a_value):
         """
         Sets the parameter to a specific value.
 
@@ -119,7 +119,7 @@ class PyMotifCounterParameter:
         self._value = a_value
         return self
 
-    def _get_value(self):
+    def get_value(self):
         """
         Gets the current value of the parameter.
 
@@ -130,14 +130,14 @@ class PyMotifCounterParameter:
         else:
             return self._value is not None
 
-    def __repr__(self):
+    def get_parameter_form(self):
         """
-        Packs the parameter in the right representation expected by ``subprocess.popen``
+        Returns the parameter in the right representation expected by ``subprocess.popen``
 
         :return: An ``n`` element list depending on the parameter type.
         :rtype: list
         """
-        param_value = self._get_value()
+        param_value = self.get_value()
         # Assume that the value is optional...
         value_to_return = []
         if param_value is not None or self._is_required:
@@ -193,39 +193,43 @@ class PyMotifCounterBase:
         self._parameters[a_param._alias] = a_param
         return self                
         
-    def get_parameter_value(self, a_param_name_or_alias):
+    def get_parameter(self, a_param_name_or_alias):
         """
         Returns the parameter object if it exists.
-        
-        Notes:
-            * The parameter is validated on assignment. On recall, it is assumed that its value is valid.
         """
         if a_param_name_or_alias not in self._parameters:
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
                                       f"undefined.")
         return self._parameters[a_param_name_or_alias]
         
-    def set_parameter_value(self, a_param_name_or_alias, a_value):
-        """
-        Modifies the value of an existing parameter.
-        
-        Notes:
-            * The parameter must have been added with add_parameter first.
-        """
-        # Check that the parameter exists.
-        if a_param_name_or_alias not in self._parameters:
-            raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
-                                      f"undefined.")
-        # Set the parameter value, this triggers a validation step as well.
-        self._parameters[a_param_name_or_alias]._set_value(a_value)
-        return self
-        
-    def _validate_parameters(self):
+    def validate_parameters(self):
         param_values = set(self._parameters.values())
         for a_param_value in param_values:
-            a_param_value._validate()
+            a_param_value.validate()
         return self
-        
+
+    def _get_parameters_form(self, ctx):
+        """
+        Retrieves the "parameter form" for each defined parameter as it would be required by subprocess.popen()
+
+        Notes:
+            * The ``ctx`` dictionary is used to pass information between the individual stages of a particular "run".
+
+        :param ctx: Current state of the process ctx.
+        :type ctx: dict
+        :returns: Updated context with ``base_parameters`` attribute (unrolled parameters as
+                  expected by subprocess.popen())
+        :rtype: dict
+        """
+        all_param_forms = set(self._parameters.values())
+        p_params = []
+        for a_param_value in all_param_forms:
+            p_params.extend(a_param_value.get_parameter_form())
+        new_ctx = {}
+        new_ctx.update(ctx)
+        new_ctx["base_parameters"] = p_params
+        return new_ctx
+
     def _transform_network(self, a_graph):
         """
         Transforms a given networkx graph to the intermediate representation expected 
@@ -235,49 +239,66 @@ class PyMotifCounterBase:
         
     def _before_run(self, ctx):
         """
-        Constructs a process context for a particular run.
+        Executes any preparatory steps as required by a particular algorithm.
         
-        Notes:
-            * Typically, obtain a network representation and add it to the context.
+        :param ctx: Current state of the process ctx, **including** ``base_transformed_graph, base_original_graph``.
+        :type ctx: dict
+        :returns: Updated context (depends on process specifics)
+        :rtype: dict
         """
         return ctx
         
     def _run(self, ctx):
         """
-        Actually calls the external binary and adds the return value to the context
-        
-        Notes:
-            * Typically, create the process object and pass at least the network to it.
+        Actually calls the external process and adds the return value to the context.
+
+        :param ctx: Current state of the process ctx, **including** ``base_transformed_graph, base_original_graph,
+                    base_parameters``.
+        :type ctx: dict
+        :returns: Updated context (depends on process specifics)
+        :rtype: dict
         """
         return ctx
         
     def _after_run(self, ctx):
         """
-        Performs any clean up required and returns the context.
+        Performs any clean up.
         
-        Notes:
-            * Typically, erase any intermediate files if they were created anywhere else than the tmp/ folder
+        :param ctx: Current state of the process ctx, **including** ``base_transformed_graph, base_original_graph,
+                    base_parameters``.
+        :type ctx: dict
+        :returns: Updated context (depends on process specifics)
+        :rtype: dict
         """
         return ctx
     
     def __call__(self, a_graph):
         """
-        Kickstarts the whole binary calling process.
+        Initiates a motif count.
+
+        :param a_graph: The Networkx graph to enumerate motifs over.
+        :type a_graph: networkx.Graph (or any other networkx class that is supported).
+        :returns: Most commonly a DataFrame that contains information about a given motif count/
+        :rtype: pandas.DataFrame
+        :raises: PyMotifCounterParameterError from the validation step.
         """
-        # Make sure that all parameters have valid values according to the underlying
-        # motif counting algorithm.
-        self._validate_parameters()
-        # Transform a given network to the representation expected by the underlying 
-        # motif counting algorithm.
-        transformed_network = self._transform_network(a_graph)
+        # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
+        # Initialise the context for this run
         ctx = {}
-        ctx.update({"transformed_graph":transformed_network,
-                    "original_graph":a_graph})
+        # Validate parameters
+        self.validate_parameters()
+        # Provided that everything is alright, add the parameters to the context
+        ctx = self._get_parameters_form(ctx)
+        # Use the attached transformer to transform a given network to the representation
+        # expected by the underlying motif counting algorithm.
+        transformed_network = self._transform_network(a_graph)
+        ctx.update({"base_transformed_graph": transformed_network,
+                    "base_original_graph": a_graph})
         # Prepare...
         ctx = self._before_run(ctx)
         # ...execute...
         ctx = self._run(ctx)        
         # ...clean up.
-        ctx = self._after_run(ctx) # ctx must also contain the entire file returned by the algorithm
+        ctx = self._after_run(ctx)
         # Transform the output to a computable form
         return self._output_transformer(ctx)

@@ -125,17 +125,14 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
         :return: Updated context variable.
         :rtype: dict
         """
-        # Group parameters
-        all_param_values = set(self._parameters.values())
-        p_params = []
-        for a_param_value in all_param_values:
-            p_params.extend(a_param_value())
+        # Get the existing parameters
+        p_params = ctx["base_parameters"]
 
         # Create the process object
         p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # Call the process
-        out, err = p.communicate(input=ctx["transformed_graph"], timeout=320)
+        out, err = p.communicate(input=ctx["base_transformed_graph"], timeout=320)
 
         ret_ctx = {}
         ret_ctx.update(ctx)

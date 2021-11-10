@@ -45,8 +45,8 @@ def test_repr_flag_notflag_error():
                                             default_value=22,
                                             is_flag=False)
 
-    assert p_is_flag.__repr__() == ["-s"]
-    assert p_is_not_flag.__repr__() == ["-s", "22"]
+    assert p_is_flag.get_parameter_form() == ["-s"]
+    assert p_is_not_flag.get_parameter_form() == ["-s", "22"]
 
 
 def test_set_invalid_value_error():
@@ -56,7 +56,7 @@ def test_set_invalid_value_error():
                                 default_value=22)
 
     with pytest.raises(PyMotifCounterParameterError):
-        p._set_value("Wrong")
+        p.set_value("Wrong")
 
 
 def test_validation_succesful():
@@ -65,4 +65,4 @@ def test_validation_succesful():
                                 validation_expr=re.compile("[0-9]+"),
                                 default_value=22,
                                 is_required=True)
-    assert p._validate() is True
+    assert p.validate() is True
