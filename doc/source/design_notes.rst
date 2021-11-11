@@ -1,110 +1,12 @@
-============
-Design Notes
-============
+===============
+Developer notes
+===============
 
-Motif counter offers a set of convenient bindings to existing binaries of motif counter
-algorithms.
+Work In Progress
 
-The aim of this project is to offer a low level link to the functionality of each codebase
-(i.e. through FFI).
 
-The objective of this version is to bring together a basic set of programs and offer a python
-interface at a process level (i.e. through `popen`).
-
-This is achieved by abstracting the inputs and outputs of each process, offering a high 
-level interface which accepts a `networkx` graph and returns a motif / graphlet distribution.
-
-The tools
-=========
-
-The following tools are included:
-
-1. ``mfinder``
-    * `Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
-    * To compile ``mfinder`` in 2021, you have to add ``-fcommon`` to ``CFLAGS``.
-        * See https://stackoverflow.com/questions/36209788/gcc-multiple-definition-of-error
-    
-2. ``fanmod``
-    * `Website <https://github.com/aanastasiou/fanmod-cmd>`_
-    * The original ``fanmod`` was operated *only* via a ``wxwidgets`` Graphical User 
-      Interface (GUI). Subsequent work produced ``fanmod_cmd`` and that version 
-      was used as the basis for the code that produces the ``fanmod_cmd`` binary
-      used in this project.
-    
-3. ``NetMODE``
-    * `Website <https://sourceforge.net/projects/netmode/>`_ 
-    * `Paper <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0050093>`_
-    
-4. ``PGD``
-    * Websites:
-        * `One <https://github.com/nkahmed/PGD>`_ 
-        * `Two <http://nesreenahmed.com/graphlets/>`_ 
-        * `Three <http://graphlets.org/>`_
-        
-        
-Overall design
---------------
-
-.. mermaid::
-    :caption: A high level view of the project's design.
-    
-    
-    classDiagram
-        class Parameter
-        
-        class PyMotifCounterResultBase
-        
-        class PyMotifCounterNetworkRepBase
-        
-        
-        class PyMotifCounterProcessBase
-        PyMotifCounterProcessBase : -str _binary_location
-        
-        PyMotifCounterProcessBase o-- PyMotifCounterNetworkRepBase:_input_transformer
-        PyMotifCounterProcessBase o-- PyMotifCounterResultBase:_output_transformer
-        PyMotifCounterProcessBase *-- "0..*" Parameter:_parameters
-        
-        
-Typical process flowchart
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. mermaid::
-    :caption: Typical flowchart of ``PyMotifCounter`` operation.
-    
-    flowchart TB
-        A["Network (networkx)"];
-        B["Transform to method (process) dependent representation"];
-        C["Check parameter validity"]
-        D["Run external process"];
-        E["Collect output"]
-        F["Transform output to computable form (DataFrame)"];
-        G["Return results (DataFrame)"];
-        
-        subgraph Python
-        A --> B
-        subgraph PyMotifCounter
-        B --> C
-        E --> F
-        end
-        F --> G        
-        end
-        
-        subgraph System
-        C --> D
-        D --> E        
-        end
-        
-        style A fill:#ddcbbc
-        style G fill:#ddcbbc
-        style D fill:#E83B3C, color:#BBBBBB
-        
-        style B fill:#2b9c90
-        style C fill:#2b9c90
-        style E fill:#2b9c90
-        style F fill:#2b9c90
-        
-High level overview
-^^^^^^^^^^^^^^^^^^^
+Overview
+========
 
 .. mermaid::
     :caption: High level class overview
@@ -119,8 +21,67 @@ High level overview
         C --> B
         B --> D
 
+Typical process flowchart
+=========================
+
+.. mermaid::
+    :caption: Typical flowchart of ``PyMotifCounter`` operation.
+
+    flowchart TB
+        A["Network (networkx)"];
+        B["Transform to method (process) dependent representation"];
+        C["Check parameter validity"]
+        D["Run external process"];
+        E["Collect output"]
+        F["Transform output to computable form (DataFrame)"];
+        G["Return results (DataFrame)"];
+
+        subgraph Python
+        A --> B
+        subgraph PyMotifCounter
+        B --> C
+        E --> F
+        end
+        F --> G
+        end
+
+        subgraph System
+        C --> D
+        D --> E
+        end
+
+        style A fill:#ddcbbc
+        style G fill:#ddcbbc
+        style D fill:#E83B3C, color:#BBBBBB
+
+        style B fill:#2b9c90
+        style C fill:#2b9c90
+        style E fill:#2b9c90
+        style F fill:#2b9c90
+
+
+.. mermaid::
+    :caption: A high level view of the project's design.
+
+    classDiagram
+        class PyMotifCounterParameter
+        
+        class PyMotifCounterOutputTransformerBase
+        
+        class PyMotifCounterInputTransformerBase
+        
+        
+        class PyMotifCounterProcessBase
+        PyMotifCounterProcessBase : -str _binary_location
+        
+        PyMotifCounterProcessBase o-- PyMotifCounterInputTransformerBase:_input_transformer
+        PyMotifCounterProcessBase o-- PyMotifCounterOutputTransformerBase:_output_transformer
+        PyMotifCounterProcessBase *-- "0..*" PyMotifCounterParameter:_parameters
+        
+        
+
 Parameters
-----------
+==========
 
 .. mermaid::
    :caption: A basic set of parameters required by all algorithms. These listings are driving the modelling at process level.
@@ -153,15 +114,6 @@ Parameters
       class pgd
       pgd : Path input_file_path
       pgd : stdout output_file
-      
-      
-      
-Requirements
-^^^^^^^^^^^^
-
-1. Must be possible to pass / define other parameters that a program might be accepting
-    * Consider the way ``click`` options work
-    
       
 
 Inputs
@@ -230,3 +182,10 @@ Other Resources
 1. ``ORCA`` `website <https://github.com/thocevar/orca>`_
     * Also see `this <https://github.com/qema/orca-py>`_
 2. `Hypergraphlets <http://www0.cs.ucl.ac.uk/staff/natasa/group-page.html>`_
+
+3. ``PGD``
+    * Websites:
+        * `One <https://github.com/nkahmed/PGD>`_
+        * `Two <http://nesreenahmed.com/graphlets/>`_
+        * `Three <http://graphlets.org/>`_
+
