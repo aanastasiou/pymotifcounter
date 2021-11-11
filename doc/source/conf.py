@@ -32,6 +32,7 @@ release = '0.1'
 # ones.
 extensions = ["sphinxcontrib.mermaid",
               "sphinx.ext.autodoc",
+              "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
