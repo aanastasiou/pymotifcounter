@@ -8,9 +8,6 @@ Base objects outlining the functionality of PyMotifCounter
 
 import os
 import re
-import networkx
-import subprocess
-import pyparsing
 import pandas
 from .exceptions import *
 
@@ -77,6 +74,20 @@ class PyMotifCounterParameter:
                     raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
                                                        f"valid default value.")
         self.validate()
+
+    def __str__(self):
+        try:
+            self.validate()
+            valid_part = ""
+        except PyMotifCounterParameterError as e:
+            valid_part = "INVALID"
+
+        req_part = "OPTIONAL" if self._is_required else "MANDATORY"
+        is_flag_part = "Flag" if self._is_flag else ""
+        str_label = f"{self._name} / {self._alias} -{self._help_str[0:20]}- " \
+                    f"({req_part},{is_flag_part},Default:{self._default_value}, " \
+                    f"Validates as:{self._validation_expr}) {str(self._value)}:{valid_part}"
+        return str_label
 
     def _check_value(self, a_value):
         """

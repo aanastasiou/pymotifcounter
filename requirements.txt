@@ -1,4 +1,5 @@
 alabaster==0.7.12
+attrs==21.2.0
 Babel==2.9.1
 backcall==0.2.0
 certifi==2021.10.8
@@ -10,6 +11,7 @@ docutils==0.17.1
 fancycompleter==0.9.1
 idna==3.3
 imagesize==1.2.0
+iniconfig==1.1.1
 ipython==7.28.0
 jedi==0.18.0
 Jinja2==3.0.2
@@ -26,20 +28,24 @@ pdbpp==0.10.3
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==8.3.2
+pluggy==1.0.0
 prompt-toolkit==3.0.20
 ptyprocess==0.7.0
+py==1.11.0
 Pygments==2.10.0
 pyparsing==2.4.7
 PyQt5==5.15.4
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.9.0
 pyrepl==0.9.0
+pytest==6.2.5
 python-dateutil==2.8.2
 pytz==2021.3
 requests==2.26.0
 six==1.16.0
 snowballstemmer==2.1.0
 Sphinx==4.2.0
+sphinx-copybutton==0.4.0
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==2.0.0
@@ -47,6 +53,7 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-mermaid==0.7.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
+toml==0.10.2
 traitlets==5.1.0
 urllib3==1.26.7
 wcwidth==0.2.5

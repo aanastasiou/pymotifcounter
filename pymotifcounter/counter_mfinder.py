@@ -111,6 +111,13 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                    help_str="Number of random networks to generate",
                                                    default_value=0,
                                                    validation_expr=re.compile("[0-9]+")))
+
+        self.add_parameter(PyMotifCounterParameter(name="nd",
+                                                   alias="is_undirected",
+                                                   help_str="Input network is a non-directed network",
+                                                   default_value=False,
+                                                   is_flag=True,
+                                                   is_required=False))
                                      
     def _run(self, ctx):
         """
