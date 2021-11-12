@@ -82,11 +82,12 @@ class PyMotifCounterParameter:
         except PyMotifCounterParameterError as e:
             valid_part = "INVALID"
 
-        req_part = "OPTIONAL" if self._is_required else "MANDATORY"
-        is_flag_part = "Flag" if self._is_flag else ""
-        str_label = f"{self._name} / {self._alias} -{self._help_str[0:20]}- " \
-                    f"({req_part},{is_flag_part},Default:{self._default_value}, " \
-                    f"Validates as:{self._validation_expr}) {str(self._value)}:{valid_part}"
+        req_part = "MANDATORY" if self._is_required else "OPTIONAL"
+        is_flag_part = "FLAG, " if self._is_flag else ""
+        help_str_part = f"{self._help_str[0:15]}..." if self._help_str else ""
+        str_label = f"{self._name} / {self._alias} -{help_str_part}- " \
+                    f"({req_part}, {is_flag_part}DEFAULT:{self._default_value}, " \
+                    f"VALIDATOR:{self._validation_expr}) {str(self._value)}:{valid_part}"
         return str_label
 
     def _check_value(self, a_value):
@@ -212,6 +213,12 @@ class PyMotifCounterBase:
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param_name_or_alias} "
                                       f"undefined.")
         return self._parameters[a_param_name_or_alias]
+
+    def show_parameters(self):
+        """
+        Returns a human readable representation for each unique parameter defined
+        """
+        return [param_info for param_info in map(lambda x:str(x), set(self._parameters.values()))]
         
     def validate_parameters(self):
         param_values = set(self._parameters.values())
