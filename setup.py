@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 import warnings
 
 from setuptools import setup, find_packages
@@ -22,8 +23,8 @@ def get_pymotifcounter_binaries():
         existing_binaries = []
 
     if len(existing_binaries)<1:
-        warnings.warn("!!!None of the core binaries are installed in the local Python interpreter's bin/ as part of this "
-                      "installation!!!")
+        warnings.warn("!!!None of the core binaries are installed in the local Python "
+                      "interpreter's bin/ as part of this installation!!!")
 
     return existing_binaries
 
@@ -36,15 +37,23 @@ setup(
     author='Athanasios Anastasiou',
     author_email='athanastasiou@gmail.com',
     zip_safe=True,
-    url='',
-    license='',
-    # packages=find_packages(exclude=('test', 'test.*')),
-    packages=["pymotifcounter",],
+    url='https://github.com/aanastasiou/pymotifcounter',
+    license='Apache License 2.0',
+    packages=["pymotifcounter", ],
     keywords='',
     data_files=[("bin", get_pymotifcounter_binaries()), ],
-    # scripts=['scripts/neomodel_install_labels', 'scripts/neomodel_remove_labels'],
-    # setup_requires=['pytest-runner'] if any(x in ('pytest', 'test') for x in sys.argv) else [],
+    setup_requires=['pytest-runner'] if any(x in ('pytest', 'test') for x in sys.argv) else [],
     tests_require=['pytest'],
     install_requires=['pandas', 'networkx', 'pyparsing'],
-    # classifiers=[]
+    classifiers=["Development Status :: 4 - Beta",
+                 "Topic :: Scientific/Engineering",
+                 "Topic :: Scientific/Engineering :: Bio-Informatics",
+                 "Topic :: Scientific/Engineering :: Mathematics",
+                 "Operating System :: POSIX :: Linux",
+                 "License :: OSI Approved :: Apache Software License",
+                 "Intended Audience :: Developers",
+                 "Intended Audience :: Science/Research",
+                 "Natural Language :: English",
+                 "Programming Language :: Python :: 3",
+                 ]
     )
