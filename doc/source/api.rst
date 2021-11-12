@@ -1,4 +1,5 @@
 .. _api:
+
 ======================
 ``PyMotifCounter`` API
 ======================
@@ -30,5 +31,6 @@
 
 .. automodule:: pymotifcounter.exceptions
     :members:
+    :undoc-members:
 
 

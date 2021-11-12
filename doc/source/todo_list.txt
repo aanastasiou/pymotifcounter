@@ -1,0 +1,30 @@
+TODO List as of Fri 12 Nov 16:52:15 UTC 2021
+../pymotifcounter/abstractcounter.py:193 TODO: HIGH, Parameters need to be re-iterated to check for duplicates appropriately.
+../pymotifcounter/abstractcounter.py:303 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
+../pymotifcounter/counter_fanmod.py:20 TODO: MID, The parser --> DataFrame is pretty standard by now, should be incorporated in the standard round-trip
+../pymotifcounter/counter_fanmod.py:29 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
+../pymotifcounter/counter_fanmod.py:30 TODO: HIGH, Make sure that the float can parse just integer part too.
+../pymotifcounter/counter_fanmod.py:46 TODO: HIGH, Check which fields are percentages and make sure this is denoted in the output
+../pymotifcounter/counter_fanmod.py:68 TODO: LOW, Revise the parser so that it only has one root level.
+../pymotifcounter/counter_fanmod.py:72 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
+../pymotifcounter/counter_fanmod.py:98 TODO: HIGH, the validation can be a function
+../pymotifcounter/counter_fanmod.py:99 TODO: MID, add the output file name and use it when it is specified
+../pymotifcounter/counter_fanmod.py:121 TODO: LOW, if the default value is bool then the parameter is flag.
+../pymotifcounter/counter_fanmod.py:122 TODO: HIGH, Change the validation here from numeric to proper bool when you fix the validation to be performed by a function
+../pymotifcounter/counter_fanmod.py:123 TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
+../pymotifcounter/counter_fanmod.py:136 TODO: HIGH, this needs exception handling
+../pymotifcounter/counter_fanmod.py:137 TODO: HIGH, Add a prefix that depends on the binary
+../pymotifcounter/counter_fanmod.py:144 TODO: HIGH, this can become a parameter with a __TEMP__default value
+../pymotifcounter/counter_fanmod.py:153 TODO: HIGH, this needs exception handling for timeout
+../pymotifcounter/counter_fanmod.py:154 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
+../pymotifcounter/counter_mfinder.py:28 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
+../pymotifcounter/counter_mfinder.py:52 TODO: LOW, Revise the parser so that it only has one root level.
+../pymotifcounter/counter_mfinder.py:56 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
+../pymotifcounter/counter_mfinder.py:86 TODO: LOW, consider turning this to an iterator to handle larger graphs
+../pymotifcounter/counter_mfinder.py:93 TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
+../pymotifcounter/counter_mfinder.py:94 TODO: HIGH, the validation can be a function
+../pymotifcounter/counter_mfinder.py:95 TODO: MID, add the output file name and use it when it is specified
+../pymotifcounter/counter_mfinder.py:135 TODO: LOW, it is probably easy to make mfinder work with stdin/stdout as a binary
+../pymotifcounter/counter_mfinder.py:136 TODO: HIGH, Add some kind of prefix/suffix identification to the temporary files that are created.
+../pymotifcounter/counter_mfinder.py:144 TODO: HIGH, this needs exception handling for timeout
+../pymotifcounter/counter_netmode.py:59 TODO:HIGH, need to inspect the `err` and raise appropriate errors

@@ -6,22 +6,19 @@
 Welcome to PyMotifCounter's documentation!
 ==========================================
 
-``PyMotifCounter`` is a unified interface to fast motif enumeration algorithms.
-
-The algorithms Currently supported are:
+``PyMotifCounter`` is a unified interface to fast motif enumeration algorithms such as:
 
 * ``mfinder``
 * ``fanmod``
 * ``NetMODE``
 * ``PGD``
 
-The aim of the project is to offer a low level link to the functionality of each codebase (i.e. proper Python bindinds).
-
-The objective of this version is to offer a python wrapping interface to external processes as if they were
+The objective of this version is to offer an interface to external processes as if they were
 Python functions.
 
 This is achieved by abstracting the inputs, parameters and outputs of each binary, creating a high
-level interface which accepts a `networkx` graph and returns a motif / graphlet distribution.
+level interface which accepts a ``networkx`` graph and returns a motif / graphlet distribution as a
+``pandas.DataFrame``.
 
 A typical usage example is as follows:
 
