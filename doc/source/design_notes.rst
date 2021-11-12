@@ -1,9 +1,7 @@
+.. _dev notes:
 ===============
 Developer notes
 ===============
-
-Work In Progress
-
 
 Overview
 ========
@@ -21,44 +19,6 @@ Overview
         C --> B
         B --> D
 
-Typical process flowchart
-=========================
-
-.. mermaid::
-    :caption: Typical flowchart of ``PyMotifCounter`` operation.
-
-    flowchart TB
-        A["Network (networkx)"];
-        B["Transform to method (process) dependent representation"];
-        C["Check parameter validity"]
-        D["Run external process"];
-        E["Collect output"]
-        F["Transform output to computable form (DataFrame)"];
-        G["Return results (DataFrame)"];
-
-        subgraph Python
-        A --> B
-        subgraph PyMotifCounter
-        B --> C
-        E --> F
-        end
-        F --> G
-        end
-
-        subgraph System
-        C --> D
-        D --> E
-        end
-
-        style A fill:#ddcbbc
-        style G fill:#ddcbbc
-        style D fill:#E83B3C, color:#BBBBBB
-
-        style B fill:#2b9c90
-        style C fill:#2b9c90
-        style E fill:#2b9c90
-        style F fill:#2b9c90
-
 
 .. mermaid::
     :caption: A high level view of the project's design.
@@ -71,50 +31,23 @@ Typical process flowchart
         class PyMotifCounterInputTransformerBase
         
         
-        class PyMotifCounterProcessBase
-        PyMotifCounterProcessBase : -str _binary_location
+        class PyMotifCounterBase
+        PyMotifCounterBase : -str _binary_location
         
-        PyMotifCounterProcessBase o-- PyMotifCounterInputTransformerBase:_input_transformer
-        PyMotifCounterProcessBase o-- PyMotifCounterOutputTransformerBase:_output_transformer
-        PyMotifCounterProcessBase *-- "0..*" PyMotifCounterParameter:_parameters
-        
-        
+        PyMotifCounterBase o-- PyMotifCounterInputTransformerBase:_input_transformer
+        PyMotifCounterBase o-- PyMotifCounterOutputTransformerBase:_output_transformer
+        PyMotifCounterBase *-- "0..*" PyMotifCounterParameter:_parameters
 
-Parameters
-==========
+        class PyMotifCounterMfinder
 
-.. mermaid::
-   :caption: A basic set of parameters required by all algorithms. These listings are driving the modelling at process level.
-   
-   classDiagram
-      class MotifCounter
-      MotifCounter : +int motif_size
-      
-      
-      class mfinder 
-      mfinder : Path input_file_path
-      mfinder : Path output_file_path
-      mfinder : int motif_size
-      mfinder : bool is_nondirected
-      mfinder : int n_random_nets
-      
-      class fanmod
-      fanmod : Path input_file_path
-      fanmod : Path output_file_path
-      fanmod : bool is_directed
-      fanmod : int motif_size
-      fanmod : int n_random_nets
-      
-      class NetMODE
-      NetMODE : stdin input_file
-      NetMODE : stdout output_file
-      NetMODE : int n_random_nets
-      NetMODE : int method
+        class PyMotifCounterNetMODE
 
-      class pgd
-      pgd : Path input_file_path
-      pgd : stdout output_file
-      
+        class PyMotifCounterFanmod
+
+        PyMotifCounterMfinder --|> PyMotifCounterBase
+        PyMotifCounterNetMODE --|> PyMotifCounterBase
+        PyMotifCounterFanmod --|> PyMotifCounterBase
+
 
 Inputs
 ======
@@ -141,6 +74,34 @@ to be passed along with the edgelist, depending on their specific objectives.
 4. ``PGD`` 
     * Expects an edge list of ``Source Target`` 
     * The edge list must be **COMMA** separated.
+
+
+Parameters
+==========
+
+
+``mfinder``
+-----------
+
+.. literalinclude:: resources/mfinder_params.txt
+
+
+``fanmod_cmd``
+--------------
+
+.. literalinclude:: resources/fanmod_params.txt
+
+
+``NetMODE``
+-----------
+
+.. literalinclude:: resources/netmode_params.txt
+
+
+``PGD``
+-------
+
+.. literalinclude:: resources/pgd_params.txt
 
 
 Outputs
@@ -176,8 +137,8 @@ adjacency matrices of the motifs it has detected.
 
 
 
-Other Resources
-===============
+Other algorithms
+================
 
 1. ``ORCA`` `website <https://github.com/thocevar/orca>`_
     * Also see `this <https://github.com/qema/orca-py>`_

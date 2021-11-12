@@ -1,0 +1,12 @@
+-k --size    = k-node subgraphs (=3,4,5 or 6)
+-c --random  = # comparison graphs (some number, could be 0, an integer in [0, 2^31))
+-b --burnin  = burnin = # comparison graphs discarded (some number, could be 0)
+-e --method  = bidirectional edge random_method (=0, 1, 2, 3(default) or 4)
+               0: fixed;
+               1: no regard;
+               2: global constant;
+               3: local constant;
+               4: uniform.
+-t --thread  = number of threads to run
+-v --verbose = interface mode (for interfacing with e.g. R) (=0 (default), 1)
+-s --showall = show all subgraph statistics in random network while (k <= 5)

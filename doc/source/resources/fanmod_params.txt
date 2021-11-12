@@ -1,0 +1,9 @@
+Allowed options:
+  --help                  produce help message
+  -i [ --input ] arg      input graph file
+  -o [ --output ] arg     output csv file
+  -d [ --directed ]       the graph input is directed
+  -s [ --motif_size ] arg the size of the searched motifs. default = 4
+  -r [ --rnd_nets ] arg   the amount of random nets to compare the motif 
+                          frequency. default = 1000
+

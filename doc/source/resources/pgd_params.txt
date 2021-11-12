@@ -1,0 +1,56 @@
+Usage: ./pgd -f path
+
+         pgd options:
+        =================================================================================
+        Parallel Parameterized Graphlet Decomposition (PGD) Library
+        =================================================================================
+        -f, --file,--graph              : Input GRAPH file for computing the graphlets (e.g., matrix market format, simple edge list).
+        -a, --algorithm                 : Algorithm for the GRAPHLET DECOMPOSITION. Default: exact, approximate, etc.
+        ---------------------------------------------------------------------------------
+        -w, --workers                   : Number of PROCESSING UNITS (workers) for the algorithm to use (default = max).
+        -b, --block_size                : Size of batch (number of jobs) dynamically assigned to the processing unit, that is, 1, 64, 512, etc.  Default: -b 64
+        ---------------------------------------------------------------------------------
+        -o, --ordering                  : Strategy used to determine the order in which the edge/node graphlets are computed.
+                                          Default: -o degree (kcore, rand, natural/off, etc.).
+            --s2l                       : Direction of the ordering (default: largest to smallest).
+                                          Note to order from smallest to largest, set '--s2l'
+        -n, --neigh_ordering            : Strategy used to order the neighbors of each node. Default: degree (kcore, rand, natural, etc.)
+                                          Note only applicable if CSC/CSR is used (-r csc).
+            --s2l_neigh                 : Order direction for neighbor/csc ordering strategy
+                                          (e.g., --neigh_ordering degree --s2l_neigh, default: largest to smallest)
+        ---------------------------------------------------------------------------------
+        -c, --counts,--macro            : Compute MACRO (GLOBAL) GRAPHLET FEATURES and save counts to file (e.g., --counts name.graphlets)
+        -m, --micro                     : Compute MICRO (LOCAL) GRAPHLET FEATURES and save EDGE-by-MOTIF feature matrix (-m name.micro_graphlets)
+                                          Default: OFF. NOTE: Turn ON edge graphlet counting by specifying an output file, e.g., '-m name.micro_graphlets'
+        ---------------------------------------------------------------------------------
+        -v, --verbose                   : Output additional details to the screen.
+        -?, -h, --help                  : Print out this help menu.
+
+
+        REPRESENTATION: Example: ./pgd -r csc (adj, etc.)
+        =================================================================================
+        -r,   --rep                     : Graph representation [adj, csc, hybrid, auto, etc].
+                                          Default: Auto select optimal.
+                'adj'    - adjacency matrix   : dense n by n matrix, O(|V|^2) storage cost
+                'csc'    - comp. sparse col   : large sparse graphs, O(|V|+|E|) storage cost
+                'hybrid' -  csc + adj         : small sparse and dense graphs, O(|V|^2 + |V| + |E|) storage cost
+        -l, --adj_limit                 : Threshold/limit for creating adj representation. Default: '-l 10000' (that is <10000 nodes).
+
+
+        ORDERING TECHNIQUES: Example: ./pgd -o degree (kcore, rand, etc.)
+        =================================================================================
+        'degree',   'deg'                    : O(|V|)
+        'kcore',                             : O(|E|)
+        'rand', 'random'                     : O(|V|)
+        'off',  'natural'
+
+         Other methods for ordering include:
+        'kcore_degree', 'kcore_deg'          : O(|V|)
+        'degree_vol',   'deg_vol'            : O(|E|)
+        'kcore_vol',                         : O(|E|)
+        'deg_kcore_vol'                      : O(|E|)
+        ------------------------------------------------------------------
+        NOTE: Default ordering is kcore (degeneracy order). For natural order, use '-o off' or '-o natural'
+
+        Copyright Nesreen K. Ahmed (http://nesreenahmed.com) and Ryan A. Rossi (http://ryanrossi.com).
+        Website: http://nesreenahmed.com/graphlets for news and updates.

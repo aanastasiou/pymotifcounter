@@ -1,5 +1,5 @@
 """
-    PyMotifCounter specific exceptions.
+PyMotifCounter specific exceptions.
     
 :author: Athanasios Anastasiou
 :date: Oct 2021

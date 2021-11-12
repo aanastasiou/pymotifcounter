@@ -3,12 +3,13 @@ Supported algorithms
 ====================
 
 .. csv-table:: Overview
-    :header: Algorithm, Motif size range, Key publication, On the web
-    :widths: 10, 20, 20, 20
+    :header: Algorithm, Motif size range, Multi-threading, Prob. Counting, Key publication, More information
+    :widths: auto
+    :align: center
 
-    ``mfinder``, :math:`3 \le s \le 8`,Network Motifs: Simple Building Blocks of Complex Networks [3]_,`Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
-    ``fanmod``, :math:`3 \le s` [#]_, FANMOD: a tool for fast network motif detection [4]_,`Website <https://github.com/aanastasiou/fanmod-cmd>`_ [#]_
-    ``NetMODE``, :math:`3 \le k \le 6`, NetMODE: Network Motif Detection without Nauty [5]_,`Website <https://sourceforge.net/projects/netmode/>`_
+    ``mfinder``, :math:`3 \le s \le 8`, No, Yes, Network Motifs: Simple Building Blocks of Complex Networks [3]_, `Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
+    ``fanmod``, :math:`3 \le s` [#]_, No, Yes, FANMOD: a tool for fast network motif detection [4]_, `Website <https://github.com/aanastasiou/fanmod-cmd>`_ [#]_
+    ``NetMODE``, :math:`3 \le k \le 6`, Yes, No, NetMODE: Network Motif Detection without Nauty [5]_, `Website <https://sourceforge.net/projects/netmode/>`_
 
 Notes
 -----
@@ -18,8 +19,8 @@ Notes
 
 
 .. [#] ``fanmod`` itself does not enforce a strict limit to the size of motifs it can enumerate but the underlying
-       `nauty <https://pallini.di.uniroma1.it/>` library will complain for motif sizes greater than 8.
-.. [#] Please note that `the original ``fanmod`` `website <http://theinf1.informatik.uni-jena.de/motifs/>`_ is no
+       `nauty <https://pallini.di.uniroma1.it/>`_ library will complain for motif sizes greater than 8.
+.. [#] Please note that `the original fanmod `website <http://theinf1.informatik.uni-jena.de/motifs/>`_ is no
        longer accessible. The original ``fanmod`` was operated *only* via a ``wxwidgets`` Graphical User
        Interface (GUI). Subsequent work (by `Sebastian Bücker <https://github.com/gabbage/fanmod-cmd>`_) produced
        ``fanmod_cmd`` and that version was used as the basis for `the code-base that produces the binary

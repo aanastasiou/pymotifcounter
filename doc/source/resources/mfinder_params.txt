@@ -1,0 +1,62 @@
+Usage : mfinder <Network input file name> -s <motif size> -r <no. of randon networks> [-f <output file name>] [more flags]
+
+	-s <motif size>  :Motif size to search
+	-r <rand net num> :Number of random networks to generate
+	-f <output file name>  : Output file name
+	-nd : Input network is a non-directed network.
+	-p <num of samples>: run with Sampling method,
+	-omem : output members list of all subgraphs
+	-h : help
+
+	Additional flags:
+
+	Motif criteria flags:
+	-m <value> : mfactor threshold to use when calculating motifs
+	-z <value> : Z-score threshold to use when calculating motifs
+	-u : Uniqueness threshold
+	-nu : Dont count uniqueness and ignore uniqueness threshold
+
+	Random networks randomization flags:
+
+	-rs : use stubs method for generating random networks
+	-rclust : Preserve clustering sequence in random networks
+	-met :Use Metropolis algorithm to conserve triad-census
+		in random networks
+		(for s>3; Default : Do not use Metropolis)
+	-t0 <(default 0.001)> :Initial temperature (-met option)
+	-iter <(default 2)> :controls how many steps to perform (-met option) 
+	-eth  <(default 0.005)> : energy threshhold (-met option)
+	-rgrass <colony size>: generate random networks using grassberger 
+		algorithm
+	-rgrass_max_sz <max ratio>: Limit maximal colony size ratio
+	-rdm: don't conserve mutual edges in random networks
+	-rcl <layers num><size1 size2 ..sizem>: conserve layers in random
+		 networks
+	-nsr : Global Switches number when generating Random networks.
+
+
+	Output files flags:
+
+	-oi : output intermediate output file. Defualt :No: 
+	-ospmem <subgraph id>: output members list of a specific subgraphs only
+	-maxmem <list length>: limit length of members list to 'list length'.
+		Defualt: 1000
+	-omat : output matrix format file ('__MAT.txt')
+	-omet : output metropolis log
+	-olog : output general log file
+	-orall : output matrix format of appearances in each random network
+	-ornet : output random networks files
+	-otop <no. of top motifs> : No. of top motifs to show
+	-onodangl: output a list of all nan-dangling detected motifs
+
+	Other flags
+
+	-ts : <target,source,weight> Old format of input network file
+	-q :Quiet mode - No output to the screen
+	-dd : Don't die mode. Wait to user action before terminating the
+		program
+	-pold <num of samples>: run sampling method old version
+	-nor : Dont search Real network. Defualt :No: 
+	-cr : calculate roles statistics
+mfinder Version 1.20
+

@@ -50,7 +50,7 @@ Visualising motifs
 * One of those uses might be to actually visualise the motif subgraph. Let's do that here:
 * For more motif subgraphs, see `this motif dictionary <https://www.weizmann.ac.il/mcb/UriAlon/sites/mcb.UriAlon/files/uploads/NetworkMotifsSW/mfinder/motifdictionary.pdf>`_ [#]_
 
-.. literalinclude:: resources/code_examples/params_and_aliases.py
+.. literalinclude:: resources/code_examples/vis_motifs.py
     :language: Python
 
 
