@@ -9,7 +9,10 @@ Base objects outlining the functionality of PyMotifCounter
 import os
 import types
 import pandas
+
 from .parameters import *
+import tempfile
+from .exceptions import *
 
 
 class PyMotifCounterOutputTransformerBase:
@@ -28,21 +31,76 @@ class PyMotifCounterInputTransformerBase:
     Transforms any given networkx graph to the representation expected by a given motif counting algorithm.
     """
     def __call__(self, a_graph):
+        """
+        Returns a generator of the representation of each edge of a_graph.
+        """
         return None
-        
-          
+
+    def to_file(self, a_graph, file_path=None):
+        """
+        Convenience function to send the output of the representation to a file on the disk.
+
+        :param a_graph:
+        :type a_graph:
+        :param file_path:
+        :type file_path:
+        :returns:
+        :rtype:
+        """
+        tmp_filename = None
+        if file_path is None:
+            tmp_fileno, tmp_filename = tempfile.mkstemp()
+            file_handle = os.fdopen(tmp_fileno, "wt")
+        else:
+            file_handle = open(file_path, "wt")
+
+        with file_handle as fd:
+            for a_line in self.__call__(a_graph):
+                fd.write(a_line)
+
+        return tmp_filename or file_path
+
+
 class PyMotifCounterBase:
     """
     Represents an external motif counting process.
     """
     
-    def __init__(self, binary_location="", parameters=None):
+    def __init__(self, binary_location="",
+                 input_file_param=None,
+                 output_file_param=None,
+                 parameters=None):
+        """
+        Initialises a motif counter object.
+
+        :param binary_location:
+        :type binary_location:
+        :param input_file_param:
+        :type input_file_param:
+        :param output_file_param:
+        :type output_file_param:
+        :param parameters:
+        :type parameters:
+        """
         if not os.path.exists(binary_location):
             raise PyMotifCounterError(f"{self.__class__.__name__}::Binary location {binary_location} invalid.")
 
         # TODO: HIGH, Parameters need to be re-iterated to check for duplicates appropriately.
         self._parameters = parameters or {}
+
+        if type(input_file_param) is not PyMotifCounterParameter:
+            raise TypeError(f"input_file_param should be PyMotifCounterParameter, received {type(input_file_param)}")
+        else:
+            self.add_parameter(input_file_param)
+
+        if type(output_file_param) is not PyMotifCounterParameter:
+            raise TypeError(f"output_file_param should be PyMotifCounterParameter, received {type(output_file_param)}")
+        else:
+            self.add_parameter(output_file_param)
+
         self._binary_location = binary_location
+        self._input_file_param_name = input_file_param.name
+        self._output_file_param_name = output_file_param.name
         self._input_transformer = PyMotifCounterInputTransformerBase()
         self._output_transformer = PyMotifCounterOutputTransformerBase()
         
@@ -151,17 +209,38 @@ class PyMotifCounterBase:
         :raises: PyMotifCounterParameterError from the validation step.
         """
         # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
-        # Initialise the context for this run
-        ctx = {}
         # Validate parameters
         self.validate_parameters()
-        # Provided that everything is alright, add the parameters to the context
-        ctx = self._get_parameters_form(ctx)
-        # Use the attached transformer to transform a given network to the representation
-        # expected by the underlying motif counting algorithm.
-        transformed_network = self._transform_network(a_graph)
-        ctx.update({"base_transformed_graph": transformed_network,
-                    "base_original_graph": a_graph})
+
+        # Initialise the context for this run with the given graph
+        ctx = {"base_original_graph": a_graph}
+
+        # Update the input parameter value to whatever its appropriate value should be
+        in_param_value = self.get_parameter(self._input_file_param_name).get_value()
+        if in_param_value == "-":
+            # If the input parameter is stdin then use the attached transformer to transform a given
+            # network to the representation expected by the underlying motif counting algorithm.
+            ctx.update({"base_transformed_graph": "".join(self._input_transformer(a_graph))})
+        elif in_param_value is None:
+            # If the input parameter is required and its default value is None then the input should be read from
+            # a temporary file
+            tmp_file_name = self._input_transformer.to_file(a_graph)
+            self.get_parameter(self._input_file_param_name).set_value(tmp_file_name)
+        else:
+            # Input should be read by a file
+            self._input_transformer.to_file(a_graph, file_path=in_param_value)
+
+        # Similarly, update the output parameter but in this case no actual io is performed because the
+        # output is not yet available.
+        out_param_value = self.get_parameter(self._output_file_param_name).get_value()
+        if out_param_value is None:
+            tmp_file_name = self.
+
+
+        # # Provided that everything is alright, add the parameters to the context
+        # ctx = self._get_parameters_form(ctx)
+
+
         # Prepare...
         ctx = self._before_run(ctx)
         # ...execute...

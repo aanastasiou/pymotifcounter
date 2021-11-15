@@ -7,6 +7,7 @@ Implements the NetMODE concrete counter.
 
 import os
 import re
+import itertools
 import shutil
 import networkx
 import subprocess
@@ -15,6 +16,7 @@ import pandas
 from .abstractcounter import *
 
 # TODO, HIGH: Document the concrete classes
+
 
 class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase):
     @staticmethod
@@ -88,10 +90,9 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
         # Obtain network representation
         # First of all, encode the node ID to a number. NetMODE works only with numeric nodes
         nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes() + 1)))
-        num_to_noded = {value: key for key, value in nodeid_to_num.items()}
-        # Create the edge list, translate node ids and convert to string data in one call.
-        return f"{a_graph.number_of_nodes()}\n" + "".join(
-            map(lambda x: f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n", networkx.to_edgelist(a_graph)))
+        return itertools.chain((f"{a_graph.number_of_nodes()+1}\n" for _ in [1]),
+                               (f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n"
+                                for x in networkx.to_edgelist(a_graph)))
 
 
 class PyMotifCounterNetMODE(PyMotifCounterBase):

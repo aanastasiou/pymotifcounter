@@ -83,13 +83,18 @@ class PyMotifCounterOutputTransformerFanmod(PyMotifCounterOutputTransformerBase)
 
 class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
     def __call__(self, a_graph):
+        """
+        Returns a generator over a graph's edge list representation.
+
+        :param a_graph: The networkx graph to transform
+        :type a_graph: <<networkx.Graph>>
+        :returns: A generator for each line of the edge list
+        :rtype: generator
+        """
         # Obtain network representation
         # First of all, encode the node ID to a number.
         nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes()+1)))
-        num_to_noded = {value: key for key, value in nodeid_to_num.items()}
-        # Create the edge list
-        return "".join(map(lambda x: f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n",
-                           networkx.to_edgelist(a_graph)))
+        return (f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\n" for x in networkx.to_edgelist(a_graph))
 
 
 class PyMotifCounterFanmod(PyMotifCounterBase):

@@ -81,10 +81,7 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
         # Obtain network representation
         # First of all, encode the node ID to a number.
         nodeid_to_num = dict(zip(a_graph.nodes(), range(1, a_graph.number_of_nodes()+1)))
-        num_to_noded = {value:key for key, value in nodeid_to_num.items()}
-        # Create the edge list
-        # TODO: LOW, consider turning this to an iterator to handle larger graphs
-        return "".join(map(lambda x:f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\t1\n", networkx.to_edgelist(a_graph)))
+        return (f"{nodeid_to_num[x[0]]}\t{nodeid_to_num[x[1]]}\t1\n" for x in networkx.to_edgelist(a_graph))
 
 
 class PyMotifCounterMfinder(PyMotifCounterBase):
