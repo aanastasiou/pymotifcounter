@@ -7,22 +7,21 @@ Base objects outlining the functionality of PyMotifCounter
 """
 
 import os
-import re
+import types
 import pandas
 from .exceptions import *
 
 
-class PyMotifCounterParameter:
+class PyMotifCounterParameterBase:
     """
     Represents a parameter that is used to pass data to an external program.
     """
     def __init__(self, name,
+                 validation_callback,
+                 is_required,
+                 default_value,
                  alias=None,
-                 validation_expr=None,
-                 is_required=True,
-                 help_str=None,
-                 default_value=None,
-                 is_flag=False):
+                 help_str=None):
         """
         Initialises a parameter and performs some basic validation.
 
@@ -35,13 +34,10 @@ class PyMotifCounterParameter:
         :param help_str: A short description of the parameter's use. Usually taken verbatim from the binary ``--help``
                          output.
         :type help_str: str
-        :param validation_expr: A regexp validation expression that describes the set of valid values for the parameter.
-        :type validation_expr: re.Pattern
+        :param validation_callback: A regexp validation expression that describes the set of valid values for the parameter.
+        :type validation_callback: types.FunctionType
         :param default_value: The default value for this parameter
         :type default_value: Any
-        :param is_flag: Whether this parameter is a flag (the parameter's ``name`` is not followed by its value on the
-                        command line).
-        :type is_flag: bool
         """
 
         self._value = None
@@ -49,30 +45,24 @@ class PyMotifCounterParameter:
         self._alias = alias
         self._is_required = is_required
         self._help_str = help_str
-        self._validation_expr = validation_expr
+        self._validation_callback = validation_callback
         self._default_value = default_value
-        self._is_flag = is_flag
 
-        if type(self._validation_expr) is not re.Pattern:
-            if not self._is_flag:
-                raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} must specify "
-                                                   f"an appropriate validation expression. "
-                                                   f"Received {self._validation_expr}")
-            else:
-                self._validation_expr = None
+        if type(self._validation_callback) is not types.FunctionType:
+            raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} must specify "
+                                               f"an appropriate validation function."
+                                               f"Received {type(self._validation_callback)}")
 
         if self._is_required and self._default_value is None:
-            if not self._is_flag:
-                raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
-                                                   f"valid default value.")
+            raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
+                                               f"valid default value.")
 
         if self._is_required:
-            if not self._is_flag:
-                try:
-                    self._check_value(self._default_value)
-                except PyMotifCounterParameterError:
-                    raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
-                                                       f"valid default value.")
+            try:
+                self._check_value(self._default_value)
+            except PyMotifCounterParameterError:
+                raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
+                                                   f"valid default value.")
         self.validate()
 
     def __str__(self):
@@ -83,11 +73,10 @@ class PyMotifCounterParameter:
             valid_part = "INVALID"
 
         req_part = "MANDATORY" if self._is_required else "OPTIONAL"
-        is_flag_part = "FLAG, " if self._is_flag else ""
         help_str_part = f"{self._help_str[0:15]}..." if self._help_str else ""
         str_label = f"{self._name} / {self._alias} -{help_str_part}- " \
-                    f"({req_part}, {is_flag_part}DEFAULT:{self._default_value}, " \
-                    f"VALIDATOR:{self._validation_expr}) {str(self._value)}:{valid_part}"
+                    f"({req_part}, DEFAULT:{self._default_value}, " \
+                    f"VALIDATOR:{self._validation_callback}) {str(self._value)}:{valid_part}"
         return str_label
 
     def _check_value(self, a_value):
@@ -101,14 +90,10 @@ class PyMotifCounterParameter:
         :raises: Validation exception
 
         """
-        if a_value is not None or self._is_required:
-            if not self._is_flag and self._validation_expr.match(str(a_value)) is None:
-                raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} "
-                                                   f"expected {self._validation_expr}, received {a_value}")
-        else:
+        if a_value is None and self._is_required:
             raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} is required.")
 
-        return True
+        return self._validation_callback(a_value)
         
     def validate(self):
         """
@@ -137,10 +122,7 @@ class PyMotifCounterParameter:
 
         :return:
         """
-        if not self._is_flag:
-            return self._value or self._default_value
-        else:
-            return self._value is not None
+        return self._value or self._default_value
 
     def get_parameter_form(self):
         """
@@ -151,15 +133,17 @@ class PyMotifCounterParameter:
         """
         param_value = self.get_value()
         # Assume that the value is optional...
-        value_to_return = []
-        if param_value is not None or self._is_required:
-            # If it is required (it cannot be None) or if it is not None anyway then assume that the value is
-            # a flag (and if it is a flag a non-zero value would mean that it should be present in the output).
-            value_to_return = [f"-{self._name}"]
-            if not self._is_flag:
-                # If the value is not a flag (but is still required -or has non-None value-) then add the actual value
-                value_to_return += [str(param_value)]
-        return value_to_return
+        return [self._name, str(param_value)]
+
+class PyMotifCounterNumericParameter(PyMotifCounterParameterBase):
+    def __init__(self, name,
+                 is_required,
+                 default_value,
+                 alias=None,
+                 help_str=None):
+        super90.__init__(name, is_required, default_value,
+                 alias=None,
+                 help_str=None):)
 
         
 class PyMotifCounterOutputTransformerBase:

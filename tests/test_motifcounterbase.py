@@ -6,7 +6,7 @@ Ensures the functionality of PyMotifCounterBase.
 """
 import pytest
 import re
-from pymotifcounter.abstractcounter import PyMotifCounterBase, PyMotifCounterParameter
+from pymotifcounter.abstractcounter import PyMotifCounterBase, PyMotifCounterParameterBase
 from pymotifcounter.exceptions import PyMotifCounterError
 
 
@@ -21,8 +21,8 @@ def test_init_no_binary_location_error():
 
 
 def test_set_duplicate_parameter_error():
-    p1 = PyMotifCounterParameter("s", "Size", validation_expr=re.compile("[A-Z]+"), default_value="ALPHA")
-    p2 = PyMotifCounterParameter("q", "Size", validation_expr=re.compile("[0-9]+"), default_value=22)
+    p1 = PyMotifCounterParameterBase("s", "Size", validation_callback=re.compile("[A-Z]+"), default_value="ALPHA")
+    p2 = PyMotifCounterParameterBase("q", "Size", validation_callback=re.compile("[0-9]+"), default_value=22)
 
     b = PyMotifCounterBase(binary_location="/bin/bash")
     b.add_parameter(p1)
@@ -45,7 +45,7 @@ def set_unknown_parameter_error():
 
 
 def set_value_succesfully():
-    p1 = PyMotifCounterParameter("s", "Size", validation_expr=re.compile("[0-9]+"), default_value=22)
+    p1 = PyMotifCounterParameterBase("s", "Size", validation_callback=re.compile("[0-9]+"), default_value=22)
 
     # Ignore that it points to /bin/bash here, this is just for testing purposes.
     b = PyMotifCounterBase(binary_location="/bin/bash")

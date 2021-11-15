@@ -104,13 +104,13 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                    alias="motif_size",
                                                    help_str="Motif size to search",
                                                    default_value=3,
-                                                   validation_expr=re.compile("[3-8]")))
+                                                   validation_callback=re.compile("[3-8]")))
 
         self.add_parameter(PyMotifCounterParameter(name="r",
                                                    alias="n_random",
                                                    help_str="Number of random networks to generate",
                                                    default_value=0,
-                                                   validation_expr=re.compile("[0-9]+")))
+                                                   validation_callback=re.compile("[0-9]+")))
 
         self.add_parameter(PyMotifCounterParameter(name="nd",
                                                    alias="is_undirected",

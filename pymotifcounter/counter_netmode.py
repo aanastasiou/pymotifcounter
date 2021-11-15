@@ -108,19 +108,19 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
                                                    alias="motif_size",
                                                    help_str="k-node subgraphs (=3,4,5 or 6)",
                                                    default_value=3,
-                                                   validation_expr=re.compile("[3-6]")))
+                                                   validation_callback=re.compile("[3-6]")))
 
         self.add_parameter(PyMotifCounterParameter(name="c",
                                                    alias="n_random",
                                                    help_str="Number of comparison graphs (An integer in [0, 2^31))",
                                                    default_value=0,
-                                                   validation_expr=re.compile("[0-9]+")))
+                                                   validation_callback=re.compile("[0-9]+")))
 
         self.add_parameter(PyMotifCounterParameter(name="t",
                                                    alias="n_threads",
                                                    help_str="Number of threads to use",
                                                    default_value=1,
-                                                   validation_expr=re.compile("[0-9]+"),
+                                                   validation_callback=re.compile("[0-9]+"),
                                                    is_required=False))
 
         self.add_parameter(PyMotifCounterParameter(name="e",
@@ -128,14 +128,14 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
                                                    help_str="Bidirectional edge random_method (0:fixed, 1:no regard, "
                                                             "2: global constant, 3:local constant (default), 4:uniform",
                                                    default_value=3,
-                                                   validation_expr=re.compile("[0-9]+"),
+                                                   validation_callback=re.compile("[0-9]+"),
                                                    is_required=False))
 
         self.add_parameter(PyMotifCounterParameter(name="b",
                                                    alias="burnin",
                                                    help_str="Number of random graphs to be discarded",
                                                    default_value=0,
-                                                   validation_expr=re.compile("[0-9]+"),
+                                                   validation_callback=re.compile("[0-9]+"),
                                                    is_required=False))
 
     def _run(self, ctx):

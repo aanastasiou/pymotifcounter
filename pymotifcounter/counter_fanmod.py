@@ -111,13 +111,13 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                    alias="motif_size",
                                                    help_str="Motif size to search",
                                                    default_value=3,
-                                                   validation_expr=re.compile("[3-8]")))
+                                                   validation_callback=re.compile("[3-8]")))
         # Number of random networks to establish significance over.
         self.add_parameter(PyMotifCounterParameter(name="r",
                                                    alias="n_random",
                                                    help_str="Number of random networks to generate",
                                                    default_value=0,
-                                                   validation_expr=re.compile("[0-9]+")))
+                                                   validation_callback=re.compile("[0-9]+")))
         # TODO: LOW, if the default value is bool then the parameter is flag.
         # TODO: HIGH, Change the validation here from numeric to proper bool when you fix the validation to be performed by a function
         # TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
@@ -125,7 +125,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
         self.add_parameter(PyMotifCounterParameter(name="d",
                                                    alias="is_directed",
                                                    help_str="Set if the graph is directed",
-                                                   validation_expr=re.compile("[0-1]+"),
+                                                   validation_callback=re.compile("[0-1]+"),
                                                    default_value=1,
                                                    is_flag=True,
                                                    is_required=True))
