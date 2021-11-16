@@ -21,7 +21,7 @@ def test_init_required_without_validation_rule_error():
 #     with pytest.raises(PyMotifCounterParameterError):
 #         p = PyMotifCounterParameterBase(name="s",
 #                                     alias="Size",
-#                                     validation_callback=re.compile("[0-9]+"),
+#                                     validation_callbacks=re.compile("[0-9]+"),
 #                                     default_value=None,
 #                                     is_required=True)
 
@@ -29,7 +29,7 @@ def test_init_required_without_validation_rule_error():
 # def test_init_required_with_invalid_default_value_error():
 #     with pytest.raises(PyMotifCounterParameterError):
 #         p = PyMotifCounterParameterBase(name="s", alias="Size",
-#                                     validation_callback=re.compile("[0-9]+"),
+#                                     validation_callbacks=re.compile("[0-9]+"),
 #                                     default_value="FAIL",
 #                                     is_required=True)
 
@@ -41,7 +41,7 @@ def test_init_required_without_validation_rule_error():
 #
 #     p_is_not_flag = PyMotifCounterParameterBase(name="s",
 #                                             alias="Size",
-#                                             validation_callback=re.compile("[0-9]+"),
+#                                             validation_callbacks=re.compile("[0-9]+"),
 #                                             default_value=22,
 #                                             is_flag=False)
 #
@@ -52,7 +52,7 @@ def test_init_required_without_validation_rule_error():
 # def test_set_invalid_value_error():
 #     p = PyMotifCounterParameterBase(name="s",
 #                                 alias="Size",
-#                                 validation_callback=re.compile("[0-9]+"),
+#                                 validation_callbacks=re.compile("[0-9]+"),
 #                                 default_value=22)
 #
 #     with pytest.raises(PyMotifCounterParameterError):
@@ -62,7 +62,7 @@ def test_init_required_without_validation_rule_error():
 # def test_validation_succesful():
 #     p = PyMotifCounterParameterBase(name="s",
 #                                 alias="Size",
-#                                 validation_callback=re.compile("[0-9]+"),
+#                                 validation_callbacks=re.compile("[0-9]+"),
 #                                 default_value=22,
 #                                 is_required=True)
 #     assert p.validate() is True
