@@ -8,6 +8,7 @@ Base objects outlining the functionality of PyMotifCounter
 
 import os
 import types
+import subprocess
 import pandas
 
 from .parameters import *
@@ -36,7 +37,7 @@ class PyMotifCounterInputTransformerBase:
         """
         return None
 
-    def to_file(self, a_graph, file_path=None):
+    def to_file(self, a_graph, file_path):
         """
         Convenience function to send the output of the representation to a file on the disk.
 
@@ -47,18 +48,9 @@ class PyMotifCounterInputTransformerBase:
         :returns:
         :rtype:
         """
-        tmp_filename = None
-        if file_path is None:
-            tmp_fileno, tmp_filename = tempfile.mkstemp()
-            file_handle = os.fdopen(tmp_fileno, "wt")
-        else:
-            file_handle = open(file_path, "wt")
-
-        with file_handle as fd:
+        with open(file_path, "wt") as fd:
             for a_line in self.__call__(a_graph):
                 fd.write(a_line)
-
-        return tmp_filename or file_path
 
 
 class PyMotifCounterBase:
@@ -88,19 +80,19 @@ class PyMotifCounterBase:
         # TODO: HIGH, Parameters need to be re-iterated to check for duplicates appropriately.
         self._parameters = parameters or {}
 
-        if type(input_file_param) is not PyMotifCounterParameter:
+        if not isinstance(input_file_param, PyMotifCounterParameterBase):
             raise TypeError(f"input_file_param should be PyMotifCounterParameter, received {type(input_file_param)}")
         else:
             self.add_parameter(input_file_param)
 
-        if type(output_file_param) is not PyMotifCounterParameter:
+        if not isinstance(output_file_param, PyMotifCounterParameterBase):
             raise TypeError(f"output_file_param should be PyMotifCounterParameter, received {type(output_file_param)}")
         else:
             self.add_parameter(output_file_param)
 
         self._binary_location = binary_location
-        self._input_file_param_name = input_file_param.name
-        self._output_file_param_name = output_file_param.name
+        self._input_file_param_name = input_file_param._name
+        self._output_file_param_name = output_file_param._name
         self._input_transformer = PyMotifCounterInputTransformerBase()
         self._output_transformer = PyMotifCounterOutputTransformerBase()
         
@@ -111,6 +103,7 @@ class PyMotifCounterBase:
             
         self._parameters[a_param._name] = a_param
         self._parameters[a_param._alias] = a_param
+
         return self                
         
     def get_parameter(self, a_param_name_or_alias):
@@ -216,35 +209,50 @@ class PyMotifCounterBase:
         ctx = {"base_original_graph": a_graph}
 
         # Update the input parameter value to whatever its appropriate value should be
-        in_param_value = self.get_parameter(self._input_file_param_name).get_value()
+        in_param = self.get_parameter(self._input_file_param_name)
+        in_param_value = in_param.value
         if in_param_value == "-":
             # If the input parameter is stdin then use the attached transformer to transform a given
             # network to the representation expected by the underlying motif counting algorithm.
             ctx.update({"base_transformed_graph": "".join(self._input_transformer(a_graph))})
-        elif in_param_value is None:
-            # If the input parameter is required and its default value is None then the input should be read from
-            # a temporary file
-            tmp_file_name = self._input_transformer.to_file(a_graph)
-            self.get_parameter(self._input_file_param_name).set_value(tmp_file_name)
+        elif not in_param.is_set():
+            # If the input parameter has not been assigned to a value then send the input to a temporary file
+            _, in_tmp_file_name = tempfile.mkstemp()
+            self._input_transformer.to_file(a_graph, file_path=in_tmp_file_name)
+            in_param.value = in_tmp_file_name
         else:
-            # Input should be read by a file
-            self._input_transformer.to_file(a_graph, file_path=in_param_value)
+            # TODO: HIGH, Raise an exception about the file parameter not being in the right state.
+            pass
 
         # Similarly, update the output parameter but in this case no actual io is performed because the
         # output is not yet available.
-        out_param_value = self.get_parameter(self._output_file_param_name).get_value()
-        if out_param_value is None:
-            tmp_file_name = self.
+        out_param = self.get_parameter(self._output_file_param_name)
+        out_param_value = out_param.value
+        # If the output is to be sent to a temporary file, determine that here.
+        if not out_param.is_set():
+            _, out_tmp_file_name = tempfile.mkstemp()
+            out_param.value = out_tmp_file_name
 
+        # # Provided that everything is alright, get all the parameters in their appropriate form
+        ctx = self._get_parameters_form(ctx)
 
-        # # Provided that everything is alright, add the parameters to the context
-        # ctx = self._get_parameters_form(ctx)
-
-
-        # Prepare...
+        # Run any other preparation
         ctx = self._before_run(ctx)
+
         # ...execute...
-        ctx = self._run(ctx)        
+        # TODO: HIGH, this needs exception handling
+
+        # Create the process object
+        # TODO: HIGH, this needs exception handling for timeout
+        # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
+        p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Call the process
+        out, err = p.communicate(timeout=320)
+
+        ctx.update({"base_proc_response": out,
+                    "base_proc_error": err})
+
         # ...clean up.
         ctx = self._after_run(ctx)
         # Transform the output to a computable form
