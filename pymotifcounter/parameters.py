@@ -14,7 +14,8 @@ class PyMotifCounterParameterBase:
                  default_value,
                  validation_callbacks,
                  alias=None,
-                 help_str=None):
+                 help_str=None,
+                 pos=None):
         """
         Initialises a raw parameter and performs some basic validation.
 
@@ -27,6 +28,9 @@ class PyMotifCounterParameterBase:
         :param help_str: A short description of the parameter's use. Usually taken verbatim from the binary ``--help``
                          output.
         :type help_str: str
+        :param pos: An integer denoting the position of a parameter. If this is set (i.e. not None and >0), it implies
+                    that the parameter is positional.
+        :type pos: int
         :param validation_callbacks: A regexp validation expression that describes the set of valid values for the parameter.
         :type validation_callbacks: tuple
         :param default_value: The default value for this parameter
@@ -40,6 +44,7 @@ class PyMotifCounterParameterBase:
         self._help_str = help_str
         self._validation_callbacks = validation_callbacks
         self._default_value = default_value
+        self._pos = pos
 
         if self._is_required and self._default_value is None:
             raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
@@ -52,6 +57,10 @@ class PyMotifCounterParameterBase:
                 raise PyMotifCounterParameterError(f"Required parameter {self._name} / {self._alias} must specify "
                                                    f"valid default value.")
         self.validate()
+
+    @property
+    def pos(self):
+        return self._pos
 
     @property
     def value(self):
@@ -112,7 +121,10 @@ class PyMotifCounterParameterBase:
         :return: An ``n`` element list depending on the parameter type.
         :rtype: list
         """
-        return [f"-{self._name}", str(self.value)]
+        if self._pos is not None:
+            return [str(self.value), ]
+        else:
+            return [f"-{self._name}", str(self.value)]
 
 
 class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
@@ -120,8 +132,9 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
                  is_required=True,
                  default_value=True,
                  alias=None,
-                 help_str=None):
-        super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias, help_str=help_str)
+                 help_str=None,
+                 pos=None):
+        super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias, help_str=help_str, pos=pos)
 
     def get_param_form(self):
         if self._value or self._default_value:
@@ -136,9 +149,10 @@ class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
                  default_value=0,
                  validation_callbacks=(),
                  alias=None,
-                 help_str=None):
+                 help_str=None,
+                 pos=None):
         validators = (of_type(int),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str, pos=pos)
 
 
 class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
@@ -147,9 +161,10 @@ class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
                  default_value=0.0,
                  validation_callbacks=[],
                  alias=None,
-                 help_str=None):
+                 help_str=None,
+                 pos=None):
         validators = (of_type(float),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str, pos=pos)
 
 
 class PyMotifCounterParameterStr(PyMotifCounterParameterBase):
@@ -158,9 +173,10 @@ class PyMotifCounterParameterStr(PyMotifCounterParameterBase):
                  default_value="",
                  validation_callbacks=(),
                  alias=None,
-                 help_str=None):
+                 help_str=None,
+                 pos=None):
         validators = (of_type(str),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str, pos=pos)
 
 
 class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
@@ -170,9 +186,10 @@ class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
                  exists=False,
                  validation_callbacks=(),
                  alias=None,
-                 help_str=None):
+                 help_str=None,
+                 pos=None):
         validators = (of_type(str),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str, pos=pos)
 
         if exists:
-            self._validation_callbacks = self._validation_callbacks + (path_exists(),)
+            self._validation_callbacks = self._validation_callbacks + (path_exists(), )

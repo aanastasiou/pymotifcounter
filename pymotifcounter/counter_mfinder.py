@@ -98,8 +98,18 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
             # object
             bin_loc = shutil.which("mfinder") or ""
 
-        in_param = PyMotifCounterParameterFilepath("mfinder_in", )
-        out_param = PyMotifCounterParameterFilepath()
+        in_param = PyMotifCounterParameterFilepath(name="io_in",
+                                                   alias="mfinder_in",
+                                                   help_str="Input file",
+                                                   exists=True,
+                                                   is_required=True,
+                                                   pos=0)
+
+        out_param = PyMotifCounterParameterFilepath(name="f",
+                                                    alias="mfinder_out",
+                                                    help_str="Output file name",
+                                                    exists=True,
+                                                    is_required=True,)
 
         mfinder_parameters = [PyMotifCounterParameterInt(name="s",
                                                          alias="motif_size",
@@ -118,36 +128,10 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                           is_required=False),
                               ]
 
-
-
         super().__init__(binary_location=bin_loc,
                          input_parameter=in_param,
                          output_parameter=out_param,
                          input_transformer=PyMotifCounterInputTransformerMfinder(),
                          output_transformer=PyMotifCounterOutputTransformerMfinder(),
                          parameters=mfinder_parameters)
-
-    def _after_run(self, ctx):
-        """
-        Performs any cleanup after the process has run and produced results.
-        
-        Notes:
-            * NetMODE creates an adjacency matrix file in the CWD with all 
-              the adjacency matrices of the motifs it enumerated. This is 
-              not strictly needed because the adjacency matrix can be inferred 
-              by the motif's ID.
-
-        :param ctx: Context variable
-        :type ctx: dict
-        :return: Updated context variable (no updates for mfinder at this step).
-        :rtype: dict
-        """
-        # Simply erase both input and output temporary files
-        if os.path.exists(ctx["temporary_filename"]):
-            os.remove(ctx["temporary_filename"])
-            
-        if os.path.exists(ctx["mfinder_output_file"]):
-            os.remove(ctx["mfinder_output_file"])
-        
-        return ctx
 
