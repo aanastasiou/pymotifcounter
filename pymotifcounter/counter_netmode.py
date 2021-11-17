@@ -60,6 +60,8 @@ class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase
         """
         # Process the output (if succesful)
         # TODO:HIGH, need to inspect the `err` and raise appropriate errors
+        import pdb
+        pdb.set_trace()
         output_data = self._get_parser().parseString(str_data)
         ret_dataframe = pandas.DataFrame(
             columns=list(output_data["zscore"][0].keys()) + ["ave_rand_freq_sd", "ave_rand_conc_sd"], index=None)
@@ -109,18 +111,16 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
             bin_loc = shutil.which("NetMODE") or ""
 
         # Specify input and output parameters
-        in_param = PyMotifCounterParameterFilepath(name="stdin",
+        in_param = PyMotifCounterParameterFilepath(name="netmode_in",
                                                    help_str="NetMODE accepts input via stdin",
                                                    default_value="-",
                                                    exists=False,
-                                                   is_temporary=False,
                                                    is_required=False)
 
-        out_param = PyMotifCounterParameterFilepath(name="stdout",
+        out_param = PyMotifCounterParameterFilepath(name="netmode_out",
                                                     help_str="NetMODE returns output via stdout",
                                                     default_value="-",
                                                     exists=False,
-                                                    is_temporary=False,
                                                     is_required=False)
 
         netmode_parameters = [PyMotifCounterParameterInt(name="k",
@@ -164,7 +164,7 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
 
     def _after_run(self, ctx):
         """
-        Performs any cleanup after NetMODE has run and produced results.
+        Erases the intermediate adjacency matrix file that netmode creates.
 
         Notes:
             * NetMODE creates an adjacency matrix file in the CWD with all

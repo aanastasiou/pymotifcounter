@@ -62,7 +62,7 @@ class PyMotifCounterParameterBase:
             self._value = a_value
 
     def is_set(self):
-        return self._value is None
+        return self._value is not None
 
     def __str__(self):
         try:
@@ -111,7 +111,7 @@ class PyMotifCounterParameterBase:
         :return: An ``n`` element list depending on the parameter type.
         :rtype: list
         """
-        return [self._name, str(self.value)]
+        return [f"-{self._name}", str(self.value)]
 
 
 class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
@@ -166,29 +166,11 @@ class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
                  is_required=True,
                  default_value="",
                  exists=False,
-                 is_temporary=False,
                  validation_callbacks=(),
                  alias=None,
                  help_str=None):
         validators = (of_type(str),) + validation_callbacks
-
-        if exists:
-            validators = validators + (path_exists(),)
-
-        if is_temporary:
-            self.value = self._get_temporary_path_value()
-        self._is_temporary = is_temporary
-
         super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
 
-
-    @property
-    def value(self):
-        if self._is_temporary:
-            self.value = self._get_temporary_path_value()
-        return self._value or self._default_value
-
-    @staticmethod
-    def _get_temporary_path_value():
-        _, tmp_filename = tempfile.mkstemp()
-        return tmp_filename
+        if exists:
+            self._validation_callbacks = self._validation_callbacks + (path_exists(),)

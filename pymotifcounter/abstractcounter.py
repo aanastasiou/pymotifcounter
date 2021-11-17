@@ -106,20 +106,24 @@ class PyMotifCounterBase:
         # Add io parameters
         if not isinstance(input_parameter, PyMotifCounterParameterBase):
             raise TypeError(f"input_parameter should be PyMotifCounterParameter, received {type(input_parameter)}")
-        else:
-            self.add_parameter(input_parameter)
 
         if not isinstance(output_parameter, PyMotifCounterParameterBase):
             raise TypeError(f"output_parameter should be PyMotifCounterParameter, received {type(output_parameter)}")
-        else:
-            self.add_parameter(output_parameter)
 
         self._binary_location = binary_location
-        self._input_file_param_name = input_parameter._name
-        self._output_file_param_name = output_parameter._name
+        self._input_parameter = input_parameter
+        self._output_parameter = output_parameter
         self._input_transformer = input_transformer
         self._output_transformer = output_transformer
         
+    @property
+    def in_param(self):
+        return self._input_parameter
+
+    @property
+    def out_param(self):
+        return self._output_parameter
+
     def add_parameter(self, a_param):
         if a_param._name in self._parameters or (a_param._alias is not None and a_param._alias in self._parameters):
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
@@ -224,33 +228,35 @@ class PyMotifCounterBase:
         # Initialise the context for this run with the given graph
         ctx = {"base_original_graph": a_graph}
 
-        # Update the input parameter value to whatever its appropriate value should be
-        in_param = self.get_parameter(self._input_file_param_name)
-        in_param_value = in_param.value
-        if in_param_value == "-":
+        if self.in_param.value == "-":
             # If the input parameter is stdin then use the attached transformer to transform a given
             # network to the representation expected by the underlying motif counting algorithm.
             ctx.update({"base_transformed_graph": "".join(self._input_transformer(a_graph))})
-        elif not in_param.is_set():
+        elif not self.in_param.is_set():
             # If the input parameter has not been assigned to a value then send the input to a temporary file
             _, in_tmp_file_name = tempfile.mkstemp()
             self._input_transformer.to_file(a_graph, file_path=in_tmp_file_name)
-            in_param.value = in_tmp_file_name
+            self.in_param.value = in_tmp_file_name
         else:
             # TODO: HIGH, Raise an exception about the file parameter not being in the right state.
             pass
 
         # Similarly, update the output parameter but in this case no actual io is performed because the
         # output is not yet available.
-        out_param = self.get_parameter(self._output_file_param_name)
-        out_param_value = out_param.value
         # If the output is to be sent to a temporary file, determine that here.
-        if not out_param.is_set():
+        if not (self.out_param.is_set() or self.out_param.value == "-"):
             _, out_tmp_file_name = tempfile.mkstemp()
-            out_param.value = out_tmp_file_name
+            self.out_param.value = out_tmp_file_name
 
         # # Provided that everything is alright, get all the parameters in their appropriate form
         p_params = self._get_parameters_form()
+        # If either of the io variables are to be sent to an std stream then remove them from the parameters
+        if self.in_param.is_set():
+            p_params+=self.in_param.get_parameter_form()
+
+        if self.out_param.is_set():
+            p_params+=self.out_param.get_parameter_form()
+
         ctx.update({"base_parameters": p_params})
 
         # Run any other preparation
@@ -261,25 +267,31 @@ class PyMotifCounterBase:
         # TODO: HIGH, this needs exception handling for timeout
         # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
 
-        if in_param_value == "-":
-            p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # Call the process
-            out, err = p.communicate(input=ctx["base_transformed_graph"], timeout=320)
-        else:
-            p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if self.in_param.is_set():
+            p = subprocess.Popen([self._binary_location] + p_params,
+                                 universal_newlines=True,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
             out, err = p.communicate(timeout=320)
+        else:
+            p = subprocess.Popen([self._binary_location] + p_params,
+                                 universal_newlines=True,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+            out, err = p.communicate(input=ctx["base_transformed_graph"], timeout=320)
 
         ctx.update({"base_proc_response": out,
                     "base_proc_error": err})
 
         # ...clean up.
         ctx = self._after_run(ctx)
-        # Transform the output to a computable form
-        if out_param_value == "-":
-            ctx.update({"base_output_transformed":self._output_transformer(out, ctx)})
-        else:
-            pass
 
-        return self._output_transformer()
+        # Transform the output to a computable form
+        if self.out_param.is_set():
+            final_output = self._output_transformer.from_file(self.out_param.value, ctx)
+        else:
+            final_output = self._output_transformer(out, ctx)
+        ctx.update({"base_output_transformed":final_output})
+
+        return final_output
