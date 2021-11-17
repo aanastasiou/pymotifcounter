@@ -55,16 +55,18 @@ class PyMotifCounterOutputTransformerFanmod(PyMotifCounterOutputTransformerBase)
         data_parsing = pyparsing.OneOrMore(row_data)("enumeration")
         return data_parsing
 
-    def __call__(self, a_ctx):
+    def __call__(self, str_data, a_ctx):
         """
         Transforms the raw string output from the fanmod process to a computable pandas DataFrame
 
+        :param str_data:
+        :type str_data:
         :param a_ctx: Dictionary of context information from the subsequent execution steps
         :type a_ctx: dict
         :return: A DataFrame with all enumerated motifs according to fanmod's algorithm.
         :rtype: pandas.DataFrame
         """
-        parsed_output = self._get_parser().searchString(a_ctx["proc_response"])
+        parsed_output = self._get_parser().searchString(str_data)
         # TODO: LOW, Revise the parser so that it only has one root level.
         # Notice here how the parser's row field names are propagated to the columns of the returned DataFrame
         df_output = pandas.DataFrame(columns=list(filter(lambda x: x != "Adj_Matrix", parsed_output[0]["enumeration"][0].keys())), index=None)
@@ -98,92 +100,52 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterFanmod(PyMotifCounterBase):
-    def __init__(self):
-        # Build the base model
-        # TODO: HIGH, the validation can be a function
-        # TODO: MID, add the output file name and use it when it is specified
-        # Try to auto-discover the location of the binary here
-        bin_loc = shutil.which("fanmod_cmd") or ""
-        super().__init__(binary_location=bin_loc)
-        # Exchange the input transformer
-        self._input_transformer = PyMotifCounterInputTransformerFanmod()
-        # Exchange the result transformer
-        self._output_transformer = PyMotifCounterOutputTransformerFanmod()
-        # Add the right parameters
-        # Note here, fanmod's parameters for motif size and random networks are almost identical to mfinder's
-        # Motif size
-        self.add_parameter(PyMotifCounterParameter(name="s",
-                                                   alias="motif_size",
-                                                   help_str="Motif size to search",
-                                                   default_value=3,
-                                                   validation_callback=re.compile("[3-8]")))
-        # Number of random networks to establish significance over.
-        self.add_parameter(PyMotifCounterParameter(name="r",
-                                                   alias="n_random",
-                                                   help_str="Number of random networks to generate",
-                                                   default_value=0,
-                                                   validation_callback=re.compile("[0-9]+")))
-        # TODO: LOW, if the default value is bool then the parameter is flag.
-        # TODO: HIGH, Change the validation here from numeric to proper bool when you fix the validation to be performed by a function
-        # TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
-        # Whether the network is directed (by default it should be considered directed)
-        self.add_parameter(PyMotifCounterParameter(name="d",
-                                                   alias="is_directed",
-                                                   help_str="Set if the graph is directed",
-                                                   validation_callback=re.compile("[0-1]+"),
-                                                   default_value=1,
-                                                   is_flag=True,
-                                                   is_required=True))
+    def __init__(self, binary_location):
+        # TODO: HIGH, The binary location can be moved in the abstract class
+        # BINARY LOCATION
+        # If a location is specified, use it
+        if binary_location is not None:
+            bin_loc = binary_location
+        else:
+            # Otherwise, attempt to discover the binary on the system
+            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
+            # object
+            bin_loc = shutil.which("fanmod_cmd") or ""
 
-    def _run(self, ctx):
-        # Get the existing parameters
-        p_params = ctx["base_parameters"]
-        # TODO: HIGH, this needs exception handling
-        # TODO: HIGH, Add a prefix that depends on the binary
-        # fanmod_cmd works off of a file, so first save the input representation down to a file in temporary storage
-        tmp_fileno, tmp_filename = tempfile.mkstemp()
-        ctx["temporary_filename"] = tmp_filename
-        # Populate the file with the intermediate representation
-        with os.fdopen(tmp_fileno, "wt") as fd:
-            fd.write(ctx["base_transformed_graph"])
-        # TODO: HIGH, this can become a parameter with a __TEMP__default value
-        # Add the input file as a parameter
-        p_params += ["-i", tmp_filename]
+        in_param = PyMotifCounterParameterFilepath(name="i",
+                                                   alias="fanmod_input",
+                                                   help_str="Input graph file",
+                                                   default_value="",
+                                                   exists=True,
+                                                   is_required=True)
 
-        # For fanmod_cmd, we also have to determine the output file explicitly
-        _, tmp_filename_out = tempfile.mkstemp()
-        ctx["temporary_filename_output"] = tmp_filename_out
-        p_params += ["-o", tmp_filename_out]
-        # Create the process object
-        # TODO: HIGH, this needs exception handling for timeout
-        # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
-        p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # Call the process
-        out, err = p.communicate(timeout=320)
-        # With fanmod we know exactly where we have placed the file and can retrieve it from there.
-        with open(ctx["temporary_filename_output"], "rt") as fd:
-            out = fd.read()
-        
-        ret_ctx = {}
-        ret_ctx.update(ctx)
-        ret_ctx.update({"proc_response": out,
-                        "proc_error": err,
-                        "fanmod_input_file": ctx["temporary_filename"],
-                        "fanmod_output_file": ctx["temporary_filename_output"]})
-        return ret_ctx
-        
-    def _after_run(self, ctx):
-        """
-        Performs any cleanup after the process has run and produced results.
-        
-        Notes:
-            * Fanmod requires both an input and an output file at its input which have to be deleted when the
-              process finishes.
-        """
-        if os.path.exists(ctx["fanmod_input_file"]):
-            os.remove(ctx["fanmod_input_file"])
-            
-        if os.path.exists(ctx["fanmod_output_file"]):
-            os.remove(ctx["fanmod_output_file"])
-        
-        return ctx
+        out_param = PyMotifCounterParameterFilepath(name="o",
+                                                    alias="fanmod_output",
+                                                    help_str="Output CSV file",
+                                                    default_value="",
+                                                    exists=False,
+                                                    is_required=True)
+
+        fanmod_parameters = [PyMotifCounterParameterInt(name="s",
+                                                        alias="motif_size",
+                                                        help_str="Motif size to search",
+                                                        default_value=3,
+                                                        validation_callbacks=(is_ge(3), is_le(8),)),
+                             PyMotifCounterParameterInt(name="r",
+                                                        alias="n_random",
+                                                        help_str="Number of random networks to generate",
+                                                        default_value=0,
+                                                        validation_callbacks=(is_ge(0),)),
+                             # Whether the network is directed (by default it should be considered directed)
+                             PyMotifCounterParameterFlag(name="d",
+                                                         alias="is_directed",
+                                                         help_str="Set if the graph is directed",
+                                                         default_value=True,
+                                                         is_required=True)]
+
+        super().__init__(binary_location=bin_loc,
+                         input_parameter=in_param,
+                         output_parameter=out_param,
+                         input_transformer=PyMotifCounterInputTransformerFanmod(),
+                         output_transformer=PyMotifCounterOutputTransformerFanmod(),
+                         parameters=fanmod_parameters)

@@ -284,7 +284,16 @@ class PyMotifCounterBase:
         ctx.update({"base_proc_response": out,
                     "base_proc_error": err})
 
-        # ...clean up.
+        # Clean up temporary files
+        if self.in_param.is_set():
+            if os.path.exists(self.in_param.value):
+                os.remove(self.in_param.value)
+
+        if self.out_param.is_set():
+            if os.path.exists(self.out_param.value):
+                os.remove(self.out_param.value)
+
+        # Do any other cleanup.
         ctx = self._after_run(ctx)
 
         # Transform the output to a computable form

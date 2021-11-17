@@ -39,16 +39,18 @@ class PyMotifCounterOutputTransformerMfinder(PyMotifCounterOutputTransformerBase
         data_parsing = pyparsing.OneOrMore(row_data)("enumeration")
         return data_parsing
 
-    def __call__(self, a_ctx):
+    def __call__(self, str_data, a_ctx=None):
         """
         Transforms the raw string output from the mfinder process to a computable pandas DataFrame
 
+        :param str_data:
+        :type str_data:
         :param a_ctx: Dictionary of context information from the subsequent execution steps
         :type a_ctx: dict
         :return: A DataFrame with all enumerated motifs according to mfinder's algorithm.
         :rtype: pandas.DataFrame
         """
-        parsed_output = self._get_parser().searchString(a_ctx["proc_response"])
+        parsed_output = self._get_parser().searchString(str_data)
         # TODO: LOW, Revise the parser so that it only has one root level.
         # Notice here how the parser's row field names are propagated to the columns of the returned DataFrame
         df_output = pandas.DataFrame(columns=list(parsed_output[0]["enumeration"][0].keys()), index = None)
@@ -85,36 +87,45 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterMfinder(PyMotifCounterBase):
-    def __init__(self, binary_location = None):
-        # Build the base model
-        # TODO: HIGH, this can be abstracted further to a function that performs autodiscovery of the binary's location
-        # TODO: HIGH, the validation can be a function
-        # TODO: MID, add the output file name and use it when it is specified
-        bin_loc = shutil.which("mfinder") or ""
-        super().__init__(binary_location=bin_loc)
-        # Exchange the input transformer
-        self._input_transformer = PyMotifCounterInputTransformerMfinder()
-        # Exchange the result transformer
-        self._output_transformer = PyMotifCounterOutputTransformerMfinder()
-        # Add the right parameters        
-        self.add_parameter(PyMotifCounterParameter(name="s",
-                                                   alias="motif_size",
-                                                   help_str="Motif size to search",
-                                                   default_value=3,
-                                                   validation_callback=re.compile("[3-8]")))
+    def __init__(self, binary_location=None):
+        # BINARY LOCATION
+        # If a location is specified, use it
+        if binary_location is not None:
+            bin_loc = binary_location
+        else:
+            # Otherwise, attempt to discover the binary on the system
+            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
+            # object
+            bin_loc = shutil.which("mfinder") or ""
 
-        self.add_parameter(PyMotifCounterParameter(name="r",
-                                                   alias="n_random",
-                                                   help_str="Number of random networks to generate",
-                                                   default_value=0,
-                                                   validation_callback=re.compile("[0-9]+")))
+        in_param = PyMotifCounterParameterFilepath("mfinder_in", )
+        out_param = PyMotifCounterParameterFilepath()
 
-        self.add_parameter(PyMotifCounterParameter(name="nd",
-                                                   alias="is_undirected",
-                                                   help_str="Input network is a non-directed network",
-                                                   default_value=False,
-                                                   is_flag=True,
-                                                   is_required=False))
+        mfinder_parameters = [PyMotifCounterParameterInt(name="s",
+                                                         alias="motif_size",
+                                                         help_str="Motif size to search",
+                                                         default_value=3,
+                                                         validation_callbacks=(is_ge(3), is_le(8))),
+                              PyMotifCounterParameterInt(name="r",
+                                                         alias="n_random",
+                                                         help_str="Number of random networks to generate",
+                                                         default_value=0,
+                                                         validation_callbacks=(is_ge(0),)),
+                              PyMotifCounterParameterFlag(name="nd",
+                                                          alias="is_undirected",
+                                                          help_str="Input network is a non-directed network",
+                                                          default_value=False,
+                                                          is_required=False),
+                              ]
+
+
+
+        super().__init__(binary_location=bin_loc,
+                         input_parameter=in_param,
+                         output_parameter=out_param,
+                         input_transformer=PyMotifCounterInputTransformerMfinder(),
+                         output_transformer=PyMotifCounterOutputTransformerMfinder(),
+                         parameters=mfinder_parameters)
 
     def _after_run(self, ctx):
         """

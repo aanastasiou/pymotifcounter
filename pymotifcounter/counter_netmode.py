@@ -160,7 +160,7 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
                          output_parameter=out_param,
                          input_transformer=PyMotifCounterInputTransformerNetMODE(),
                          output_transformer=PyMotifCounterOutputTransformerNetMODE(),
-                         parameters = netmode_parameters)
+                         parameters=netmode_parameters)
 
     def _after_run(self, ctx):
         """

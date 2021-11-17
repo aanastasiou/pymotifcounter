@@ -3,6 +3,7 @@ from .exceptions import *
 from .validators import *
 
 
+# TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
 class PyMotifCounterParameterBase:
     """
     Represents a parameter that is used to pass data to an external program.
@@ -118,8 +119,9 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
     def __init__(self, name,
                  is_required=True,
                  default_value=True,
-                 alias=None):
-        super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias)
+                 alias=None,
+                 help_str=None):
+        super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias, help_str=help_str)
 
     def get_param_form(self):
         if self._value or self._default_value:
