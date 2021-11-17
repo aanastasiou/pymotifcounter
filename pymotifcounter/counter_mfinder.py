@@ -115,47 +115,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                    default_value=False,
                                                    is_flag=True,
                                                    is_required=False))
-                                     
-    def _run(self, ctx):
-        """
-        Enumerates motifs using mfinder
 
-        :param ctx: Context variable including the "base_transformed_graph" field that contains the
-                    transformed input graph.
-        :type ctx: dict
-        :return: Updated context
-        :rtype: dict
-        """
-        # Get the existing parameters
-        p_params = ctx["base_parameters"]
-            
-        # TODO: LOW, it is probably easy to make mfinder work with stdin/stdout as a binary
-        # TODO: HIGH, Add some kind of prefix/suffix identification to the temporary files that are created.
-        # mfinder works off of a file, so first save the input representation down to a file in temporary storage
-        tmp_fileno, tmp_filename = tempfile.mkstemp()
-        ctx["temporary_filename"] = tmp_filename
-        with os.fdopen(tmp_fileno, "wt") as fd:
-            fd.write(ctx["base_transformed_graph"])
-        p_params = [tmp_filename] + p_params
-        # Create the process object
-        # TODO: HIGH, this needs exception handling for timeout
-        p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # Call the process
-        out, err = p.communicate(timeout=320)
-        # mfinder will write a file in the same directory as the input file
-        split_tmp_filename = os.path.split(tmp_filename)
-        split_tmp_filename_ext = os.path.splitext(split_tmp_filename[1])
-        split_tmp_out_filename = f"{split_tmp_filename[0]}/{split_tmp_filename_ext[0][:7]}_OUT.txt"
-        with open(split_tmp_out_filename, "rt") as fd:
-            out = fd.read()
-        
-        ret_ctx = {}
-        ret_ctx.update(ctx)
-        ret_ctx.update({"proc_response": out,
-                        "proc_error": err,
-                        "mfinder_output_file": split_tmp_out_filename})
-        return ret_ctx
-        
     def _after_run(self, ctx):
         """
         Performs any cleanup after the process has run and produced results.

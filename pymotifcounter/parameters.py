@@ -61,6 +61,9 @@ class PyMotifCounterParameterBase:
         if self._check_value(a_value):
             self._value = a_value
 
+    def is_set(self):
+        return self._value is None
+
     def __str__(self):
         try:
             self.validate()
@@ -113,7 +116,7 @@ class PyMotifCounterParameterBase:
 
 class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
     def __init__(self, name,
-                 is_required,
+                 is_required=True,
                  default_value=True,
                  alias=None):
         super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias)
@@ -127,55 +130,62 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
 
 class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
     def __init__(self, name,
-                 is_required,
+                 is_required=True,
                  default_value=0,
                  validation_callbacks=(),
-                 alias=None):
+                 alias=None,
+                 help_str=None):
         validators = (of_type(int),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
 
 
 class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
     def __init__(self, name,
-                 is_required,
+                 is_required=True,
                  default_value=0.0,
                  validation_callbacks=[],
-                 alias=None):
+                 alias=None,
+                 help_str=None):
         validators = (of_type(float),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
 
 
 class PyMotifCounterParameterStr(PyMotifCounterParameterBase):
     def __init__(self, name,
-                 is_required,
+                 is_required=True,
                  default_value="",
                  validation_callbacks=(),
-                 alias=None):
+                 alias=None,
+                 help_str=None):
         validators = (of_type(str),) + validation_callbacks
-        super().__init__(name, is_required, default_value, validators, alias=alias)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
 
 
 class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
     def __init__(self, name,
-                 is_required,
+                 is_required=True,
                  default_value="",
                  exists=False,
                  is_temporary=False,
                  validation_callbacks=(),
-                 alias=None):
+                 alias=None,
+                 help_str=None):
         validators = (of_type(str),) + validation_callbacks
 
         if exists:
             validators = validators + (path_exists(),)
 
         if is_temporary:
-            default_value = self._get_temporary_path_value()
+            self.value = self._get_temporary_path_value()
+        self._is_temporary = is_temporary
 
-        super().__init__(name, is_required, default_value, validators, alias=alias)
+        super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str)
+
 
     @property
     def value(self):
-        self._default_value = self._get_temporary_path_value()
+        if self._is_temporary:
+            self.value = self._get_temporary_path_value()
         return self._value or self._default_value
 
     @staticmethod

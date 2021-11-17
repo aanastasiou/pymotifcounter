@@ -15,9 +15,8 @@ import pyparsing
 import pandas
 from .abstractcounter import *
 
+
 # TODO, HIGH: Document the concrete classes
-
-
 class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase):
     @staticmethod
     def _get_parser():
@@ -48,18 +47,20 @@ class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase
         data_parsing = (pyparsing.Suppress(r"calc Z-Score") + pyparsing.ZeroOrMore(row_data))("zscore")
         return data_parsing
 
-    def __call__(self, a_ctx):
+    def __call__(self, str_data, ctx=None):
         """
         Transforms the output of NetMODE to a computable form (pandas.DataFrame)
 
-        :param a_ctx: Context variable
-        :type a_ctx: dict
-        :return: Computable form of the enumeration
-        :rtype: pandas.DataFrame
+        :param str_data:
+        :type str_data:
+        :param ctx:
+        :type ctx:
+        :returns:
+        :rtype:
         """
         # Process the output (if succesful)
         # TODO:HIGH, need to inspect the `err` and raise appropriate errors
-        output_data = self._get_parser().parseString(a_ctx["proc_response"])
+        output_data = self._get_parser().parseString(str_data)
         ret_dataframe = pandas.DataFrame(
             columns=list(output_data["zscore"][0].keys()) + ["ave_rand_freq_sd", "ave_rand_conc_sd"], index=None)
         for an_item_idx, an_item in enumerate(output_data["zscore"]):
@@ -97,71 +98,69 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
 
 class PyMotifCounterNetMODE(PyMotifCounterBase):
     def __init__(self, binary_location=None):
-        # Build the base model
-        bin_loc = shutil.which("NetMODE") or ""
-        super().__init__(binary_location=bin_loc)
-        # Exchange the input transformer
-        self._input_transformer = PyMotifCounterInputTransformerNetMODE()
-        # Exchange the result transformer
-        self._output_transformer = PyMotifCounterOutputTransformerNetMODE()
-        # Add the right parameters
-        self.add_parameter(PyMotifCounterParameter(name="k",
-                                                   alias="motif_size",
-                                                   help_str="k-node subgraphs (=3,4,5 or 6)",
-                                                   default_value=3,
-                                                   validation_callback=re.compile("[3-6]")))
+        # BINARY LOCATION
+        # If a location is specified, use it
+        if binary_location is not None:
+            bin_loc=binary_location
+        else:
+            # Otherwise, attempt to discover the binary on the system
+            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
+            # object
+            bin_loc = shutil.which("NetMODE") or ""
 
-        self.add_parameter(PyMotifCounterParameter(name="c",
-                                                   alias="n_random",
-                                                   help_str="Number of comparison graphs (An integer in [0, 2^31))",
-                                                   default_value=0,
-                                                   validation_callback=re.compile("[0-9]+")))
+        # Specify input and output parameters
+        in_param = PyMotifCounterParameterFilepath(name="stdin",
+                                                   help_str="NetMODE accepts input via stdin",
+                                                   default_value="-",
+                                                   exists=False,
+                                                   is_temporary=False,
+                                                   is_required=False)
 
-        self.add_parameter(PyMotifCounterParameter(name="t",
-                                                   alias="n_threads",
-                                                   help_str="Number of threads to use",
-                                                   default_value=1,
-                                                   validation_callback=re.compile("[0-9]+"),
-                                                   is_required=False))
+        out_param = PyMotifCounterParameterFilepath(name="stdout",
+                                                    help_str="NetMODE returns output via stdout",
+                                                    default_value="-",
+                                                    exists=False,
+                                                    is_temporary=False,
+                                                    is_required=False)
 
-        self.add_parameter(PyMotifCounterParameter(name="e",
-                                                   alias="edge_select_method",
-                                                   help_str="Bidirectional edge random_method (0:fixed, 1:no regard, "
-                                                            "2: global constant, 3:local constant (default), 4:uniform",
-                                                   default_value=3,
-                                                   validation_callback=re.compile("[0-9]+"),
-                                                   is_required=False))
-
-        self.add_parameter(PyMotifCounterParameter(name="b",
-                                                   alias="burnin",
-                                                   help_str="Number of random graphs to be discarded",
-                                                   default_value=0,
-                                                   validation_callback=re.compile("[0-9]+"),
-                                                   is_required=False))
-
-    def _run(self, ctx):
-        """
-        Enumerates motifs in a graph using NetMODE.
-
-        :param ctx: Context variable
-        :type ctx: dict
-        :return: Updated context variable.
-        :rtype: dict
-        """
-        # Get the existing parameters
-        p_params = ctx["base_parameters"]
-
-        # Create the process object
-        p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # Call the process
-        out, err = p.communicate(input=ctx["base_transformed_graph"], timeout=320)
-
-        ret_ctx = {}
-        ret_ctx.update(ctx)
-        ret_ctx.update({"proc_response": out,
-                        "proc_error": err})
-        return ret_ctx
+        netmode_parameters = [PyMotifCounterParameterInt(name="k",
+                                                         alias="motif_size",
+                                                         help_str="k-node subgraphs (=3,4,5 or 6)",
+                                                         default_value=3,
+                                                         validation_callbacks=(is_ge(3), is_le(6),)),
+                              PyMotifCounterParameterInt(name="c",
+                                                         alias="n_random",
+                                                         help_str="Number of comparison graphs (An integer in [0, 2^31))",
+                                                         default_value=0,
+                                                         validation_callbacks=(is_ge(0),)),
+                              PyMotifCounterParameterInt(name="t",
+                                                         alias="n_threads",
+                                                         help_str="Number of threads to use",
+                                                         default_value=1,
+                                                         validation_callbacks=(is_ge(1),),
+                                                         is_required=False),
+                              PyMotifCounterParameterInt(name="e",
+                                                         alias="edge_select_method",
+                                                         help_str="Bidirectional edge random_method (0:fixed, "
+                                                                  "1:no regard, 2: global constant, "
+                                                                  "3:local constant (default), 4:uniform",
+                                                         default_value=3,
+                                                         validation_callbacks=(is_ge(0), is_le(4),),
+                                                         is_required=False),
+                              PyMotifCounterParameterInt(name="b",
+                                                         alias="burnin",
+                                                         help_str="Number of random graphs to be discarded",
+                                                         default_value=0,
+                                                         validation_callbacks=(is_ge(0),),
+                                                         is_required=False),
+                              ]
+        # Build the base object
+        super().__init__(binary_location=bin_loc,
+                         input_parameter=in_param,
+                         output_parameter=out_param,
+                         input_transformer=PyMotifCounterInputTransformerNetMODE(),
+                         output_transformer=PyMotifCounterOutputTransformerNetMODE(),
+                         parameters = netmode_parameters)
 
     def _after_run(self, ctx):
         """

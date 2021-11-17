@@ -20,11 +20,26 @@ class PyMotifCounterOutputTransformerBase:
     """
     Transforms the output of a motif counter to a computable object (usually a pandas DataFrame).
     """
-    def __call__(self, a_ctx):
+    def __call__(self, str_data, ctx=None):
         """
         Actually performs the conversion and returns a dataframe of results.
+
+        :param str_data:
+        :type str_data:
+        :returns:
+        :rtype:
         """
         return None
+
+    @staticmethod
+    def from_file(self, file_path, ctx=None):
+        """
+        Convenience function to allow parsing any given output from binaries.
+        """
+        with open(file_path, "rt") as fd:
+            str_data = fd.read()
+
+        return self.__call__(str_data, ctx)
 
 
 class PyMotifCounterInputTransformerBase:
@@ -58,46 +73,55 @@ class PyMotifCounterBase:
     Represents an external motif counting process.
     """
     
-    def __init__(self, binary_location="",
-                 input_file_param=None,
-                 output_file_param=None,
-                 parameters=None):
+    def __init__(self, binary_location,
+                 input_parameter,
+                 output_parameter,
+                 input_transformer,
+                 output_transformer,
+                 parameters):
         """
         Initialises a motif counter object.
 
         :param binary_location:
         :type binary_location:
-        :param input_file_param:
-        :type input_file_param:
-        :param output_file_param:
-        :type output_file_param:
+        :param input_parameter:
+        :type input_parameter:
+        :param output_parameter:
+        :type output_parameter:
+        :param input_transformer:
+        :type input_transformer:
+        :param output_transformer:
+        :type output_transformer:
         :param parameters:
         :type parameters:
         """
         if not os.path.exists(binary_location):
             raise PyMotifCounterError(f"{self.__class__.__name__}::Binary location {binary_location} invalid.")
 
-        # TODO: HIGH, Parameters need to be re-iterated to check for duplicates appropriately.
-        self._parameters = parameters or {}
+        # Add parameters other than io
+        self._parameters = {}
+        for a_prm in parameters:
+            self.add_parameter(a_prm)
 
-        if not isinstance(input_file_param, PyMotifCounterParameterBase):
-            raise TypeError(f"input_file_param should be PyMotifCounterParameter, received {type(input_file_param)}")
+        # Add io parameters
+        if not isinstance(input_parameter, PyMotifCounterParameterBase):
+            raise TypeError(f"input_parameter should be PyMotifCounterParameter, received {type(input_parameter)}")
         else:
-            self.add_parameter(input_file_param)
+            self.add_parameter(input_parameter)
 
-        if not isinstance(output_file_param, PyMotifCounterParameterBase):
-            raise TypeError(f"output_file_param should be PyMotifCounterParameter, received {type(output_file_param)}")
+        if not isinstance(output_parameter, PyMotifCounterParameterBase):
+            raise TypeError(f"output_parameter should be PyMotifCounterParameter, received {type(output_parameter)}")
         else:
-            self.add_parameter(output_file_param)
+            self.add_parameter(output_parameter)
 
         self._binary_location = binary_location
-        self._input_file_param_name = input_file_param._name
-        self._output_file_param_name = output_file_param._name
-        self._input_transformer = PyMotifCounterInputTransformerBase()
-        self._output_transformer = PyMotifCounterOutputTransformerBase()
+        self._input_file_param_name = input_parameter._name
+        self._output_file_param_name = output_parameter._name
+        self._input_transformer = input_transformer
+        self._output_transformer = output_transformer
         
     def add_parameter(self, a_param):
-        if a_param._name in self._parameters or a_param._alias in self._parameters:
+        if a_param._name in self._parameters or (a_param._alias is not None and a_param._alias in self._parameters):
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
                                       f"already defined.")
             
@@ -127,27 +151,19 @@ class PyMotifCounterBase:
             a_param_value.validate()
         return self
 
-    def _get_parameters_form(self, ctx):
+    def _get_parameters_form(self):
         """
         Retrieves the "parameter form" for each defined parameter as it would be required by subprocess.popen()
 
-        Notes:
-            * The ``ctx`` dictionary is used to pass information between the individual stages of a particular "run".
-
-        :param ctx: Current state of the process ctx.
-        :type ctx: dict
         :returns: Updated context with ``base_parameters`` attribute (unrolled parameters as
                   expected by subprocess.popen())
-        :rtype: dict
+        :rtype: list
         """
         all_param_forms = set(self._parameters.values())
         p_params = []
         for a_param_value in all_param_forms:
-            p_params.extend(a_param_value.get_parameter_form())
-        new_ctx = {}
-        new_ctx.update(ctx)
-        new_ctx["base_parameters"] = p_params
-        return new_ctx
+            p_params += a_param_value.get_parameter_form()
+        return p_params
 
     def _transform_network(self, a_graph):
         """
@@ -234,21 +250,26 @@ class PyMotifCounterBase:
             out_param.value = out_tmp_file_name
 
         # # Provided that everything is alright, get all the parameters in their appropriate form
-        ctx = self._get_parameters_form(ctx)
+        p_params = self._get_parameters_form()
+        ctx.update({"base_parameters": p_params})
 
         # Run any other preparation
         ctx = self._before_run(ctx)
 
         # ...execute...
-        # TODO: HIGH, this needs exception handling
-
         # Create the process object
         # TODO: HIGH, this needs exception handling for timeout
         # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
-        p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # Call the process
-        out, err = p.communicate(timeout=320)
+
+        if in_param_value == "-":
+            p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True, stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Call the process
+            out, err = p.communicate(input=ctx["base_transformed_graph"], timeout=320)
+        else:
+            p = subprocess.Popen([self._binary_location] + p_params, universal_newlines=True,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = p.communicate(timeout=320)
 
         ctx.update({"base_proc_response": out,
                     "base_proc_error": err})
@@ -256,4 +277,9 @@ class PyMotifCounterBase:
         # ...clean up.
         ctx = self._after_run(ctx)
         # Transform the output to a computable form
-        return self._output_transformer(ctx)
+        if out_param_value == "-":
+            ctx.update({"base_output_transformed":self._output_transformer(out, ctx)})
+        else:
+            pass
+
+        return self._output_transformer()
