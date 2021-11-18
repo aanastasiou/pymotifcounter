@@ -87,16 +87,7 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterMfinder(PyMotifCounterBase):
-    def __init__(self, binary_location=None):
-        # BINARY LOCATION
-        # If a location is specified, use it
-        if binary_location is not None:
-            bin_loc = binary_location
-        else:
-            # Otherwise, attempt to discover the binary on the system
-            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
-            # object
-            bin_loc = shutil.which("mfinder") or ""
+    def __init__(self, binary_location="mfinder"):
 
         in_param = PyMotifCounterParameterFilepath(name="io_in",
                                                    alias="mfinder_in",
@@ -128,7 +119,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                           is_required=False),
                               ]
 
-        super().__init__(binary_location=bin_loc,
+        super().__init__(binary_location=binary_location,
                          input_parameter=in_param,
                          output_parameter=out_param,
                          input_transformer=PyMotifCounterInputTransformerMfinder(),

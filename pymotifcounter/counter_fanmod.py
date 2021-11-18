@@ -100,18 +100,8 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterFanmod(PyMotifCounterBase):
-    def __init__(self, binary_location):
-        # TODO: HIGH, The binary location can be moved in the abstract class
-        # BINARY LOCATION
-        # If a location is specified, use it
-        if binary_location is not None:
-            bin_loc = binary_location
-        else:
-            # Otherwise, attempt to discover the binary on the system
-            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
-            # object
-            bin_loc = shutil.which("fanmod_cmd") or ""
-
+    def __init__(self, binary_location="fanmod_cmd"):
+        # Determine the io
         in_param = PyMotifCounterParameterFilepath(name="i",
                                                    alias="fanmod_input",
                                                    help_str="Input graph file",
@@ -126,6 +116,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                     exists=False,
                                                     is_required=True)
 
+        # Determine other parameters for the algorithm
         fanmod_parameters = [PyMotifCounterParameterInt(name="s",
                                                         alias="motif_size",
                                                         help_str="Motif size to search",
@@ -143,7 +134,8 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
                                                          default_value=True,
                                                          is_required=True)]
 
-        super().__init__(binary_location=bin_loc,
+        # Initialise the object
+        super().__init__(binary_location=binary_location,
                          input_parameter=in_param,
                          output_parameter=out_param,
                          input_transformer=PyMotifCounterInputTransformerFanmod(),

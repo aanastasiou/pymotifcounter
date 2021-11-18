@@ -99,17 +99,7 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterNetMODE(PyMotifCounterBase):
-    def __init__(self, binary_location=None):
-        # BINARY LOCATION
-        # If a location is specified, use it
-        if binary_location is not None:
-            bin_loc=binary_location
-        else:
-            # Otherwise, attempt to discover the binary on the system
-            # If it is not found, the binary_location will be set to "" which will raise an exception from the base
-            # object
-            bin_loc = shutil.which("NetMODE") or ""
-
+    def __init__(self, binary_location="NetMODE"):
         # Specify input and output parameters
         in_param = PyMotifCounterParameterFilepath(name="netmode_in",
                                                    help_str="NetMODE accepts input via stdin",
@@ -155,7 +145,7 @@ class PyMotifCounterNetMODE(PyMotifCounterBase):
                                                          is_required=False),
                               ]
         # Build the base object
-        super().__init__(binary_location=bin_loc,
+        super().__init__(binary_location=binary_location,
                          input_parameter=in_param,
                          output_parameter=out_param,
                          input_transformer=PyMotifCounterInputTransformerNetMODE(),

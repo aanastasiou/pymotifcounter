@@ -13,6 +13,7 @@ import pandas
 
 from .parameters import *
 import tempfile
+import shutil
 from .exceptions import *
 
 
@@ -95,8 +96,14 @@ class PyMotifCounterBase:
         :param parameters:
         :type parameters:
         """
-        if not os.path.exists(binary_location):
-            raise PyMotifCounterError(f"{self.__class__.__name__}::Binary location {binary_location} invalid.")
+        # BINARY LOCATION
+        # Otherwise, attempt to discover the binary on the system
+        # If it is not found, the binary_location will be set to "" which will raise an exception from the base
+        # object
+        bin_loc = shutil.which(binary_location) or ""
+
+        if not os.path.exists(bin_loc):
+            raise PyMotifCounterError(f"{self.__class__.__name__}::Binary location {bin_loc} invalid.")
 
         # Add parameters other than io
         self._parameters = {}
@@ -105,12 +112,12 @@ class PyMotifCounterBase:
 
         # Add io parameters
         if not isinstance(input_parameter, PyMotifCounterParameterBase):
-            raise TypeError(f"input_parameter should be PyMotifCounterParameter, received {type(input_parameter)}")
+            raise TypeError(f"input_parameter should be PyMotifCounterParameterBase, received {type(input_parameter)}")
 
         if not isinstance(output_parameter, PyMotifCounterParameterBase):
-            raise TypeError(f"output_parameter should be PyMotifCounterParameter, received {type(output_parameter)}")
+            raise TypeError(f"output_parameter should be PyMotifCounterParameterBase, received {type(output_parameter)}")
 
-        self._binary_location = binary_location
+        self._binary_location = bin_loc
         self._input_parameter = input_parameter
         self._output_parameter = output_parameter
         self._input_transformer = input_transformer

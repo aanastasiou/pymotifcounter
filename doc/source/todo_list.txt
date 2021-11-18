@@ -1,15 +1,14 @@
-TODO List as of Wed 17 Nov 16:01:48 UTC 2021
-../pymotifcounter/abstractcounter.py:224 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
-../pymotifcounter/abstractcounter.py:241 TODO: HIGH, Raise an exception about the file parameter not being in the right state.
-../pymotifcounter/abstractcounter.py:267 TODO: HIGH, this needs exception handling for timeout
-../pymotifcounter/abstractcounter.py:268 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
+TODO List as of Thu 18 Nov 10:05:51 UTC 2021
+../pymotifcounter/abstractcounter.py:235 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
+../pymotifcounter/abstractcounter.py:252 TODO: HIGH, Raise an exception about the file parameter not being in the right state.
+../pymotifcounter/abstractcounter.py:278 TODO: HIGH, this needs exception handling for timeout
+../pymotifcounter/abstractcounter.py:279 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
 ../pymotifcounter/counter_fanmod.py:20 TODO: MID, The parser --> DataFrame is pretty standard by now, should be incorporated in the standard round-trip
 ../pymotifcounter/counter_fanmod.py:29 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
 ../pymotifcounter/counter_fanmod.py:30 TODO: HIGH, Make sure that the float can parse just integer part too.
 ../pymotifcounter/counter_fanmod.py:46 TODO: HIGH, Check which fields are percentages and make sure this is denoted in the output
 ../pymotifcounter/counter_fanmod.py:70 TODO: LOW, Revise the parser so that it only has one root level.
 ../pymotifcounter/counter_fanmod.py:74 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
-../pymotifcounter/counter_fanmod.py:104 TODO: HIGH, The binary location can be moved in the abstract class
 ../pymotifcounter/counter_mfinder.py:28 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
 ../pymotifcounter/counter_mfinder.py:54 TODO: LOW, Revise the parser so that it only has one root level.
 ../pymotifcounter/counter_mfinder.py:58 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
