@@ -53,7 +53,7 @@ class PyMotifCounterOutputTransformerMfinder(PyMotifCounterOutputTransformerBase
         parsed_output = self._get_parser().searchString(str_data)
         # TODO: LOW, Revise the parser so that it only has one root level.
         # Notice here how the parser's row field names are propagated to the columns of the returned DataFrame
-        df_output = pandas.DataFrame(columns=list(parsed_output[0]["enumeration"][0].keys()), index = None)
+        df_output = pandas.DataFrame(columns=list(parsed_output[0]["enumeration"][0].keys()), index=None)
         for a_row_idx, a_row_data in enumerate(parsed_output[0]["enumeration"]):
             # TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
             df_output.at[a_row_idx, "motif_id"] = a_row_data["motif_id"]
@@ -99,7 +99,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
         out_param = PyMotifCounterParameterFilepath(name="f",
                                                     alias="mfinder_out",
                                                     help_str="Output file name",
-                                                    exists=True,
+                                                    exists=False,
                                                     is_required=True,)
 
         mfinder_parameters = [PyMotifCounterParameterInt(name="s",

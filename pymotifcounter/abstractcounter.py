@@ -15,6 +15,7 @@ from .parameters import *
 import tempfile
 import shutil
 from .exceptions import *
+from functools import reduce
 
 
 class PyMotifCounterOutputTransformerBase:
@@ -32,7 +33,6 @@ class PyMotifCounterOutputTransformerBase:
         """
         return None
 
-    @staticmethod
     def from_file(self, file_path, ctx=None):
         """
         Convenience function to allow parsing any given output from binaries.
@@ -255,14 +255,21 @@ class PyMotifCounterBase:
             _, out_tmp_file_name = tempfile.mkstemp()
             self.out_param.value = out_tmp_file_name
 
-        # # Provided that everything is alright, get all the parameters in their appropriate form
-        p_params = self._get_parameters_form()
+        # Provided that everything is alright, get all the parameters in their appropriate form
+        # In doing this, we still need to retain the parameter ordering to discriminate between positional arguments and
+        # options
+        all_parameters = set(self._parameters.values())
+        p_params = [{"param": a_param.get_parameter_form(), "pos": a_param.pos} for a_param in all_parameters]
+
         # If either of the io variables are to be sent to an std stream then remove them from the parameters
         if self.in_param.is_set():
-            p_params+=self.in_param.get_parameter_form()
+            p_params += [{"param": self.in_param.get_parameter_form(), "pos": self.in_param.pos}]
 
         if self.out_param.is_set():
-            p_params+=self.out_param.get_parameter_form()
+            p_params += [{"param": self.out_param.get_parameter_form(), "pos": self.out_param.pos}]
+
+        # Now sort these parameters and get th final form
+        p_params = list(reduce(lambda x, y: x + y["param"], sorted(p_params, key=lambda z: z["pos"]), []))
 
         ctx.update({"base_parameters": p_params})
 
@@ -274,6 +281,7 @@ class PyMotifCounterBase:
         # TODO: HIGH, this needs exception handling for timeout
         # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
 
+        # Decide where to direct the input
         if self.in_param.is_set():
             p = subprocess.Popen([self._binary_location] + p_params,
                                  universal_newlines=True,
@@ -291,6 +299,13 @@ class PyMotifCounterBase:
         ctx.update({"base_proc_response": out,
                     "base_proc_error": err})
 
+        # Transform the output to a computable form
+        if self.out_param.is_set():
+            final_output = self._output_transformer.from_file(self.out_param.value, ctx)
+        else:
+            final_output = self._output_transformer(out, ctx)
+        ctx.update({"base_output_transformed": final_output})
+
         # Clean up temporary files
         if self.in_param.is_set():
             if os.path.exists(self.in_param.value):
@@ -302,12 +317,5 @@ class PyMotifCounterBase:
 
         # Do any other cleanup.
         ctx = self._after_run(ctx)
-
-        # Transform the output to a computable form
-        if self.out_param.is_set():
-            final_output = self._output_transformer.from_file(self.out_param.value, ctx)
-        else:
-            final_output = self._output_transformer(out, ctx)
-        ctx.update({"base_output_transformed":final_output})
 
         return final_output

@@ -60,7 +60,7 @@ class PyMotifCounterParameterBase:
 
     @property
     def pos(self):
-        return self._pos
+        return (self._pos or 65535) if self._pos is None else self._pos
 
     @property
     def value(self):
@@ -136,9 +136,9 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
                  pos=None):
         super().__init__(name, is_required, default_value, (of_type(bool), ), alias=alias, help_str=help_str, pos=pos)
 
-    def get_param_form(self):
+    def get_parameter_form(self):
         if self._value or self._default_value:
-            return [self._name, ]
+            return [f"-{self._name}", ]
         else:
             return []
 
