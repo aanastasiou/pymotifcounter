@@ -228,32 +228,30 @@ class PyMotifCounterBase:
         :rtype: pandas.DataFrame
         :raises: PyMotifCounterParameterError from the validation step.
         """
-        # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run down to a file if required.
+        # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
         # Validate parameters
         self.validate_parameters()
 
         # Initialise the context for this run with the given graph
         ctx = {"base_original_graph": a_graph}
 
+        # Decide how to handle the input
         if self.in_param.value == "-":
             # If the input parameter is stdin then use the attached transformer to transform a given
             # network to the representation expected by the underlying motif counting algorithm.
             ctx.update({"base_transformed_graph": "".join(self._input_transformer(a_graph))})
-        elif not self.in_param.is_set():
-            # If the input parameter has not been assigned to a value then send the input to a temporary file
+        else:
+            # If the input parameter is not stdin it will be a temporary file
             _, in_tmp_file_name = tempfile.mkstemp()
             self._input_transformer.to_file(a_graph, file_path=in_tmp_file_name)
-            self.in_param.value = in_tmp_file_name
-        else:
-            # TODO: HIGH, Raise an exception about the file parameter not being in the right state.
-            pass
+            self.in_param.default_value = in_tmp_file_name
 
         # Similarly, update the output parameter but in this case no actual io is performed because the
         # output is not yet available.
         # If the output is to be sent to a temporary file, determine that here.
-        if not (self.out_param.is_set() or self.out_param.value == "-"):
+        if self.out_param.value != "-":
             _, out_tmp_file_name = tempfile.mkstemp()
-            self.out_param.value = out_tmp_file_name
+            self.out_param.default_value = out_tmp_file_name
 
         # Provided that everything is alright, get all the parameters in their appropriate form
         # In doing this, we still need to retain the parameter ordering to discriminate between positional arguments and
@@ -262,10 +260,10 @@ class PyMotifCounterBase:
         p_params = [{"param": a_param.get_parameter_form(), "pos": a_param.pos} for a_param in all_parameters]
 
         # If either of the io variables are to be sent to an std stream then remove them from the parameters
-        if self.in_param.is_set():
+        if self.in_param.value != "-":
             p_params += [{"param": self.in_param.get_parameter_form(), "pos": self.in_param.pos}]
 
-        if self.out_param.is_set():
+        if self.out_param.value != "-":
             p_params += [{"param": self.out_param.get_parameter_form(), "pos": self.out_param.pos}]
 
         # Now sort these parameters and get th final form
@@ -282,7 +280,7 @@ class PyMotifCounterBase:
         # TODO: HIGH, if the process returns an error, this error should be piped up as an exception
 
         # Decide where to direct the input
-        if self.in_param.is_set():
+        if self.in_param.value != "-":
             p = subprocess.Popen([self._binary_location] + p_params,
                                  universal_newlines=True,
                                  stdout=subprocess.PIPE,
@@ -300,18 +298,18 @@ class PyMotifCounterBase:
                     "base_proc_error": err})
 
         # Transform the output to a computable form
-        if self.out_param.is_set():
+        if self.out_param.value != "-":
             final_output = self._output_transformer.from_file(self.out_param.value, ctx)
         else:
             final_output = self._output_transformer(out, ctx)
         ctx.update({"base_output_transformed": final_output})
 
         # Clean up temporary files
-        if self.in_param.is_set():
+        if self.in_param.value != "-":
             if os.path.exists(self.in_param.value):
                 os.remove(self.in_param.value)
 
-        if self.out_param.is_set():
+        if self.out_param.value != "-":
             if os.path.exists(self.out_param.value):
                 os.remove(self.out_param.value)
 

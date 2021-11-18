@@ -60,8 +60,6 @@ class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase
         """
         # Process the output (if succesful)
         # TODO:HIGH, need to inspect the `err` and raise appropriate errors
-        import pdb
-        pdb.set_trace()
         output_data = self._get_parser().parseString(str_data)
         ret_dataframe = pandas.DataFrame(
             columns=list(output_data["zscore"][0].keys()) + ["ave_rand_freq_sd", "ave_rand_conc_sd"], index=None)

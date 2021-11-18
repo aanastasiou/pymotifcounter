@@ -63,6 +63,15 @@ class PyMotifCounterParameterBase:
         return (self._pos or 65535) if self._pos is None else self._pos
 
     @property
+    def default_value(self):
+        return self._default_value
+
+    @default_value.setter
+    def default_value(self, new_value):
+        if self._check_value(new_value):
+            self._default_value=new_value
+
+    @property
     def value(self):
         return self._value or self._default_value
 
