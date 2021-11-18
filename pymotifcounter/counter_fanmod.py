@@ -102,6 +102,9 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 class PyMotifCounterFanmod(PyMotifCounterBase):
     def __init__(self, binary_location="fanmod_cmd"):
         # Determine the io
+        # TODO: MID, Give a common name across all inputs and outputs
+        # TODO: MID, Provide a way for parameters to be accessed as attributes or keys and prefferably in a unified way
+
         in_param = PyMotifCounterParameterFilepath(name="i",
                                                    alias="fanmod_input",
                                                    help_str="Input graph file",

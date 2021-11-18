@@ -35,4 +35,4 @@ if __name__ == "__main__":
 
 Which would produce the following distribution:
 
-![image](https://github.com/aanastasiou/pymotifcounter/blob/main/doc/source/resources/fig_dist_motif_3.png?raw=true)
+![image](https://github.com/aanastasiou/pymotifcounter/blob/main/doc/source/resources/figures/fig_dist_motif_3.png?raw=true)

@@ -13,7 +13,7 @@ if __name__ == "__main__":
     motif_counter = PyMotifCounterMfinder()
     # The default value of parameter motif-size is 3.
     # Let's change it to 4
-    motif_counter.get_parameter("s").set_value(4)
+    motif_counter.get_parameter("s").value = 4
     # Produce the enumeration
     g_mtf_4_count = motif_counter(g)
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # with common names.
     # Notice here how motif size is changed to 5.
     #
-    motif_counter.get_parameter("motif_size").set_value(5)
+    motif_counter.get_parameter("motif_size").value = 5
     # Produce the enumeration
     g_mtf_5_count = motif_counter(g)
 

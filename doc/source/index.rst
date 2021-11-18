@@ -27,7 +27,7 @@ A typical usage example is as follows:
 
 Which would produce the following distribution:
 
-.. figure:: resources/fig_dist_motif_3.png
+.. figure:: resources/figures/fig_dist_motif_3.png
     :alt: Motif distribution of size 3
 
 
