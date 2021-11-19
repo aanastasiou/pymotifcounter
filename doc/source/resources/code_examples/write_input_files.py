@@ -13,7 +13,9 @@ N_NODES = 100   # Number of nodes in each network
 K_AVERAGE = 8   # Average node degree
 
 # The active transformer determines the format.
-# This example sav the networks in the format expected by mfinder
+# This example saves the networks in the format expected by mfinder
+# Assign the ACTIVE_TRANSFORMER to one of the other imported
+# transformers to change the format.
 ACTIVE_TRANSFORMER = PyMotifCounterInputTransformerMfinder
 
 if __name__ == "__main__":

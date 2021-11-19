@@ -1,15 +1,15 @@
 """
 Reads motif counts for a small population of motif count results.
 """
-
-from write_input_files import N_NETWORKS
 from pymotifcounter.concretecounters import (PyMotifCounterOutputTransformerMfinder,
                                              PyMotifCounterOutputTransformerFanmod,
                                              PyMotifCounterOutputTransformerNetMODE)
 import glob
 
 # The active transformer determines the format.
-# This example sav the networks in the format expected by mfinder
+# This example reads networks in the format expected by mfinder.
+# Assign the ACTIVE_TRANSFORMER to one of the other imported
+# transformers to change the format.
 ACTIVE_TRANSFORMER = PyMotifCounterOutputTransformerMfinder
 
 if __name__ == "__main__":

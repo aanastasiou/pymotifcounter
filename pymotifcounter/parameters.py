@@ -80,9 +80,6 @@ class PyMotifCounterParameterBase:
         if self._check_value(a_value):
             self._value = a_value
 
-    def is_set(self):
-        return self._value is not None
-
     def __str__(self):
         try:
             self.validate()
@@ -168,7 +165,7 @@ class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
     def __init__(self, name,
                  is_required=True,
                  default_value=0.0,
-                 validation_callbacks=[],
+                 validation_callbacks=(),
                  alias=None,
                  help_str=None,
                  pos=None):

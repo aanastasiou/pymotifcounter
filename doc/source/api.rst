@@ -4,6 +4,21 @@
 ``PyMotifCounter`` API
 ======================
 
+``parameters`` Module
+===========================
+
+.. automodule:: pymotifcounter.parameters
+    :members:
+    :undoc-members:
+
+Parameter validators
+--------------------
+
+.. automodule:: pymotifcounter.validators
+    :members:
+    :undoc-members:
+
+
 ``abstractcounter`` Module
 ==========================
 
@@ -15,7 +30,7 @@
 ===========================
 
 .. automodule:: pymotifcounter.concretecounters
-    :members: PyMotifCounterNetMODE, PyMotifCounterMfinder
+    :members: PyMotifCounterNetMODE, PyMotifCounterMfinder, PyMotifCounterFanmod
     :undoc-members:
     
 
@@ -32,5 +47,3 @@
 .. automodule:: pymotifcounter.exceptions
     :members:
     :undoc-members:
-
-
