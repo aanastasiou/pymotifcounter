@@ -3,19 +3,21 @@ Supported algorithms
 ====================
 
 .. csv-table:: Overview
-    :header: Algorithm, Motif size range, Multi-threading, Prob. Counting, Key publication, More information
+    :header: Algorithm, Motif size range, Directed / Undirected, Multi-threading, Prob. Counting, Key publication, More information
     :widths: auto
     :align: center
 
-    ``mfinder``, :math:`3 \le s \le 8`, No, Yes, Network Motifs: Simple Building Blocks of Complex Networks [3]_, `Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
-    ``fanmod``, :math:`3 \le s` [#]_, No, Yes, FANMOD: a tool for fast network motif detection [4]_, `Website <https://github.com/aanastasiou/fanmod-cmd>`_ [#]_
-    ``NetMODE``, :math:`3 \le k \le 6`, Yes, No, NetMODE: Network Motif Detection without Nauty [5]_, `Website <https://sourceforge.net/projects/netmode/>`_
+    ``mfinder``, :math:`3 \le s \le 8`, Both, No, Yes, Network Motifs: Simple Building Blocks of Complex Networks [3]_, `Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
+    ``fanmod``, :math:`3 \le s` [#]_, Both, No, Yes, FANMOD: a tool for fast network motif detection [4]_, `Website <https://github.com/aanastasiou/fanmod-cmd>`_ [#]_
+    ``NetMODE``, :math:`3 \le k \le 6`, Both, Yes, No, NetMODE: Network Motif Detection without Nauty [5]_, `Website <https://sourceforge.net/projects/netmode/>`_
+    ``PGD``, :math:`2 \le k \le 4`, Undirected, Yes, -, Efficient Graphlet Counting for Large Networks [6]_, `Website <http://graphlets.org/>`_
 
 Notes
 -----
 
 * ``mfinder`` reports a motif class even if it has zero samples enumerated
     * ``NetMODE`` reports only those that were enumerated.
+* ``pgd`` reports a motif distribution for motifs of size :math:`2,3,4` simultaneously, as a result of the same "run".
 
 
 .. [#] ``fanmod`` itself does not enforce a strict limit to the size of motifs it can enumerate but the underlying
@@ -29,4 +31,6 @@ Notes
 .. [3] `Milo R., Shen-Orr S., Itzkovitz S., Kashtan N., Chklovskii D., and Alon U., ‘Network Motifs: Simple Building Blocks of Complex Networks’, Science, vol. 298, no. 5594, pp. 824–827, Oct. 2002, doi: 10.1126/science.298.5594.824. <https://www.cs.cornell.edu/courses/cs6241/2019sp/readings/Milo-2002-motifs.pdf>`_
 .. [4] `S. Wernicke and F. Rasche, ‘FANMOD: a tool for fast network motif detection’, Bioinformatics, vol. 22, no. 9, pp. 1152–1153, May 2006, doi: 10.1093/bioinformatics/btl038. <https://academic.oup.com/bioinformatics/article/22/9/1152/199945>`_
 .. [5] `X. Li, R. J. Stones, H. Wang, H. Deng, X. Liu, and G. Wang, ‘NetMODE: Network Motif Detection without Nauty’, PLOS ONE, vol. 7, no. 12, p. e50093, Dec. 2012, doi: 10.1371/journal.pone.0050093. <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0050093>`_
+.. [6] `N. K. Ahmed, J. Neville, R. A. Rossi, and N. Duffield, ‘Efficient Graphlet Counting for Large Networks’, in 2015 IEEE International Conference on Data Mining, Nov. 2015, pp. 1–10. doi: 10.1109/ICDM.2015.141. <https://ieeexplore.ieee.org/document/7373304>`_
+
 

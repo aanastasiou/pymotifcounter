@@ -1,5 +1,6 @@
 [
   "binaries/NetMODE/NetMODE/NetMODE",
   "binaries/fanmod-cmd/fanmod-cmd/fanmod_cmd",
-  "binaries/mfinder/mfinder1.21/mfinder"
+  "binaries/mfinder/mfinder1.21/mfinder",
+  "binaries/pgd/PGD/pgd"
 ]

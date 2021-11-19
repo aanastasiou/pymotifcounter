@@ -22,7 +22,7 @@ def get_pymotifcounter_binaries():
     except FileNotFoundError:
         existing_binaries = []
 
-    if len(existing_binaries)<1:
+    if len(existing_binaries) < 1:
         warnings.warn("!!!None of the core binaries are installed in the local Python "
                       "interpreter's bin/ as part of this installation!!!")
 
