@@ -1,4 +1,10 @@
-import tempfile
+"""
+Defines classes for handling the inputs to underlying algorithms.
+
+:author: Athanasios Anastasiou
+:date: Nov 2021
+"""
+
 from .exceptions import *
 from .validators import *
 
@@ -19,11 +25,11 @@ class PyMotifCounterParameterBase:
         """
         Initialises a raw parameter and performs some basic validation.
 
-        :param name: The name of the parameter as it is expected by the binary (e.g. -s, --directed, etc)
+        :param name: The actual name of the parameter as it is expected by the binary (e.g. s, d, etc)
         :type name: str
         :param alias: An alternative name by which this parameter can also be known as.
         :type alias: str
-        :param is_required: Whether this parameter should always be present when calling a binary
+        :param is_required: Whether this parameter should always have a valid value when calling a binary
         :type is_required: bool
         :param help_str: A short description of the parameter's use. Usually taken verbatim from the binary ``--help``
                          output.
@@ -31,7 +37,8 @@ class PyMotifCounterParameterBase:
         :param pos: An integer denoting the position of a parameter. If this is set (i.e. not None and >0), it implies
                     that the parameter is positional.
         :type pos: int
-        :param validation_callbacks: A regexp validation expression that describes the set of valid values for the parameter.
+        :param validation_callbacks: A tuple of unary functions that expresses the constraints for the parameter to be
+                                     valid.
         :type validation_callbacks: tuple
         :param default_value: The default value for this parameter
         :type default_value: Any
@@ -102,7 +109,7 @@ class PyMotifCounterParameterBase:
         :type a_value: Any
         :returns: True
         :rtype: bool
-        :raises: Validation exception
+        :raises: PyMotifCounterParameterError
 
         """
         if a_value is None and self._is_required:
@@ -134,6 +141,11 @@ class PyMotifCounterParameterBase:
 
 
 class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
+    """
+    Defines a flag type parameter.
+
+    Beyond establishing its value as bool, a flag's parameter name only appears in the command line if it is True.
+    """
     def __init__(self, name,
                  is_required=True,
                  default_value=True,
@@ -150,6 +162,11 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
 
 
 class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
+    """
+    Defines an integer parameter.
+
+    The actual range of the integer can be further customised with ``is_g, is_ge, is_l, is_le`` validator callbacks.
+    """
     def __init__(self, name,
                  is_required=True,
                  default_value=0,
@@ -162,6 +179,13 @@ class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
 
 
 class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
+    """
+    Defines a Real parameter.
+
+    Notes:
+        * The actual range of the real can be further customised with ``is_g, is_ge, is_l, is_le`` validator callbacks.
+        * The data type for this is assumed to be **float**.
+    """
     def __init__(self, name,
                  is_required=True,
                  default_value=0.0,
@@ -174,6 +198,13 @@ class PyMotifCounterParameterReal(PyMotifCounterParameterBase):
 
 
 class PyMotifCounterParameterStr(PyMotifCounterParameterBase):
+    """
+    Defines a string parameter.
+
+    Notes:
+        * Further structural properties of the string can be customised with ``is_eq, within_range`` validator
+          callbacks.
+    """
     def __init__(self, name,
                  is_required=True,
                  default_value="",
@@ -186,6 +217,13 @@ class PyMotifCounterParameterStr(PyMotifCounterParameterBase):
 
 
 class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
+    """
+    Defines a file-path parameter
+
+    Notes:
+        * This is the primary class by which PyMotifCounter I/O parameters are defined
+        * If an input parameter is stdin then set its default_value to "-"
+    """
     def __init__(self, name,
                  is_required=True,
                  default_value="",
@@ -194,6 +232,15 @@ class PyMotifCounterParameterFilepath(PyMotifCounterParameterBase):
                  alias=None,
                  help_str=None,
                  pos=None):
+        """
+        Initialises a filepath parameter.
+
+        Notes:
+            * For all parameters except ``exists`` see the documentation of ``PyMotifCounterParameterBase``.
+
+        :exists: Whether the file path must point to an existing file
+        :type exists: bool
+        """
         validators = (of_type(str),) + validation_callbacks
         super().__init__(name, is_required, default_value, validators, alias=alias, help_str=help_str, pos=pos)
 

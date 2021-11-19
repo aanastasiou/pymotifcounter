@@ -6,6 +6,7 @@ PyMotifCounter utility functions.
 """
 import numpy
 
+
 def motif_id_to_adj_mat(a_motif_id, motif_size):
     """
     Returns the adjacency matrix associated with a particular motif id.

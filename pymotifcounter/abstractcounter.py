@@ -26,16 +26,25 @@ class PyMotifCounterOutputTransformerBase:
         """
         Actually performs the conversion and returns a dataframe of results.
 
-        :param str_data:
-        :type str_data:
-        :returns:
-        :rtype:
+        :param str_data: The data holding the information to parse
+        :type str_data: str
+        :param ctx: Optional context of a given process call. It contains a snapshot of parameters and intermediate
+                    stages associated with a given call.
+        :type ctx: dict
+        :returns: Computable form of the motif count data.
+        :rtype: pandas.DataFrame
         """
         return None
 
     def from_file(self, file_path, ctx=None):
         """
         Convenience function to allow parsing any given output from binaries.
+
+        :param file_path: A file-path to read data from
+        :param file_path: str
+        :param ctx: Optional context of a given call.
+        :type ctx: dict
+        :returns: See ``__call__()`` of the same object
         """
         with open(file_path, "rt") as fd:
             str_data = fd.read()
@@ -50,6 +59,10 @@ class PyMotifCounterInputTransformerBase:
     def __call__(self, a_graph):
         """
         Returns a generator of the representation of each edge of a_graph.
+
+        :param a_graph: A ``networkx`` graph object to be analysed.
+        :type a_graph: <<networkx.Graph>>
+        :returns:
         """
         return None
 
@@ -57,11 +70,11 @@ class PyMotifCounterInputTransformerBase:
         """
         Convenience function to send the output of the representation to a file on the disk.
 
-        :param a_graph:
-        :type a_graph:
-        :param file_path:
-        :type file_path:
-        :returns:
+        :param a_graph: A ``networkx`` graph object to be analysed
+        :type a_graph: <<networkx.Graph>>
+        :param file_path: The file to save the graph representation to.
+        :type file_path: str
+        :returns: See ``__call__()`` of the same object.
         :rtype:
         """
         with open(file_path, "wt") as fd:
@@ -83,18 +96,19 @@ class PyMotifCounterBase:
         """
         Initialises a motif counter object.
 
-        :param binary_location:
-        :type binary_location:
-        :param input_parameter:
-        :type input_parameter:
-        :param output_parameter:
-        :type output_parameter:
-        :param input_transformer:
-        :type input_transformer:
-        :param output_transformer:
-        :type output_transformer:
-        :param parameters:
-        :type parameters:
+        :param binary_location: A path leading to a binary in a location other than the default.
+        :type binary_location: str
+        :param input_parameter: Specification of the default way that this process accepts input
+        :type input_parameter: PyMotifCounterParameterFilepath
+        :param output_parameter: Specification of hte default way this process conveys its output in
+        :type output_parameter: PyMotifCounterParameterFilepath
+        :param input_transformer: The transformer that converts ``networkx`` graph objects to the representation
+                                  expected by the underlying algorithm.
+        :type input_transformer: PyMotifCounterInputTransformerBase
+        :param output_transformer: The transformer that converts motif count text data to ``pandas.DataFrame``
+        :type output_transformer: PyMotifCounterOutputTransformerBase
+        :param parameters: A list of ``PyMotifCounterParameter`` instances describing the parameters of the algorithm.
+        :type parameters: list
         """
         # BINARY LOCATION
         # Otherwise, attempt to discover the binary on the system
@@ -132,18 +146,30 @@ class PyMotifCounterBase:
         return self._output_parameter
 
     def add_parameter(self, a_param):
+        """
+        Adds a new parameter that the underlying algorithm depends on.
+
+        :param a_param: An appropriate PyMotifCounterParameter instance that describes the parameter.
+        :type a_param: PyMotifCounterParameter
+        :returns: The PyMotifCounter object
+        :rtype: PyMotifCounterBase
+        """
         if a_param._name in self._parameters or (a_param._alias is not None and a_param._alias in self._parameters):
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param._name} / {a_param._alias} "
                                       f"already defined.")
             
         self._parameters[a_param._name] = a_param
         self._parameters[a_param._alias] = a_param
-
         return self                
         
     def get_parameter(self, a_param_name_or_alias):
         """
-        Returns the parameter object if it exists.
+        Returns the parameter object given its name.
+
+        :param a_param_name_or_alias: The parameter name or its alias.
+        :type a_param_name_or_alias: str
+        :returns: An object describing the parameter.
+        :rtype: PyMotifCounterParameter
         """
         if a_param_name_or_alias not in self._parameters:
             raise PyMotifCounterError(f"{self.__class__.__name__}::Parameter {a_param_name_or_alias} "
@@ -152,11 +178,18 @@ class PyMotifCounterBase:
 
     def show_parameters(self):
         """
-        Returns a human readable representation for each unique parameter defined
+        Returns a human readable representation for each unique parameter defined.
         """
         return [param_info for param_info in map(lambda x:str(x), set(self._parameters.values()))]
         
     def validate_parameters(self):
+        """
+        Validates all parameters.
+
+        Convenience function that iteratively calls the validators of each parameter.
+
+        :returns: The same PyMotifCounter object
+        """
         param_values = set(self._parameters.values())
         for a_param_value in param_values:
             a_param_value.validate()
@@ -164,10 +197,7 @@ class PyMotifCounterBase:
 
     def _get_parameters_form(self):
         """
-        Retrieves the "parameter form" for each defined parameter as it would be required by subprocess.popen()
-
-        :returns: Updated context with ``base_parameters`` attribute (unrolled parameters as
-                  expected by subprocess.popen())
+        :returns: A list of "parameter form" for each defined parameter as it would be required by subprocess.popen().
         :rtype: list
         """
         all_param_forms = set(self._parameters.values())

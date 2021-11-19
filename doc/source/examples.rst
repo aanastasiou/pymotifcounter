@@ -104,9 +104,21 @@ Parsing existing motif counts
 
 * To parse the results for further analysis using ``PyMotifCounter`` components:
 
-
 .. literalinclude:: resources/code_examples/read_output_files.py
     :language: Python
+
+
+Using a locally available binary
+================================
+
+If you already have one of the supported binaries installed on your system, you can pass its absolute location to
+the constructor using the parameter ``binary_location``:
+
+::
+
+    motif_counter = PyMotifCounterMfinder(binary_location="/some/path/to/mfinder")
+
+
 
 
 
