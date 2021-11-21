@@ -5,6 +5,29 @@ PyMotifCounter utility functions.
 :date: Nov 2021
 """
 import numpy
+import copy
+
+
+def adj_mat_to_motif_id_perm(adj_mat):
+    """
+    Returns all motif-ids that result from permutations of the adjacency matrix.
+
+    """
+    master_adj_mat_copy =
+    pass
+
+
+def adj_mat_to_motif_id(adj_mat):
+    """
+
+    """
+    # Check that the matrix is square
+    mat_shape = adj_mat.shape
+    if mat_shape[0]!=mat_shape[1]:
+        # Raise exception
+        pass
+    else:
+        return int("".join([str(k) for k in adj_mat.reshape((mat_shape[0]**2,))]), base=2)
 
 
 def motif_id_to_adj_mat(a_motif_id, motif_size):

@@ -25,19 +25,42 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
         :return: The top level element of a PyParsing parser that handles the extraction of the useful data.
         :rtype: pyparsing.ParserElement
         """
-        # TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
         float_num = pyparsing.Regex(r"([+-]?)(nan|([0-9]*)\.([0-9]+))").setParseAction(lambda s, l, t: float(t[0]))
         int_num = pyparsing.Regex(r"[0-9]+").setParseAction(lambda s, l, t: int(t[0]))
+        section_start_end = pyparsing.Suppress(pyparsing.Literal("************************************************************"))
+        section_divide = pyparsing.Suppress(pyparsing.Literal("----------------------------------------"))
+        graphlet_name = pyparsing.Regex("[a-z_0-9]+")
+        graphlet_to_id = {"total_4_clique":31710,
+                          "total_4_chordcycle":23390,
+                          "total_4_tailed_tris":4958,
+                          "total_4_cycle":23130,
+                          "total_3_star":30856,
+                          "total_4_path"":
+        graphlet_4_node_1_triangle = pyparsing.Literal("total_4_tri")
+        graphlet_4_node_2_star = pyparsing.Literal("total_4_2star")
+        graphlet_4_node_2_edge = pyparsing.Literal("total_4_2edge")
+        graphlet_4_node_1_edge = pyparsing.Literal("total_4_1edge")
+        graphlet_4_node_indendent = pyparsing.Literal("total_4_indep")
+        graphlet_triangle = pyparsing.Literal("total_3_tris")
+        graphlet_2_star = pyparsing.Literal("total_2_star")
+        graphlet_3_node_1_edge = pyparsing.Literal("total_3_1edge")
+        graphlet_3_node_indendent = pyparsing.Literal("total_3_indep")
+        graphlet_edge = pyparsing.Literal("total_2_1edge")
+        graphlet_2_node_independent = pyparsing.Literal("total_2_indep")
+        graphlet_type = (graphlet_4_clique ^ graphlet_4_chordalcycle ^ graphlet_4_tailedtriangle ^ graphlet_4_cycle ^\
+                        graphlet_3_star ^ graphlet_4_path ^ graphlet_4_node_1_triangle ^ graphlet_4_node_2_star ^ \
+                        graphlet_4_node_2_edge ^ graphlet_4_node_1_edge ^ graphlet_4_node_indendent ^ \
+                        graphlet_triangle ^ graphlet_2_star ^ graphlet_3_node_1_edge ^ graphlet_3_node_indendent ^ \
+                        graphlet_edge ^ graphlet_2_node_independent).setParseAction(lambda s,l,t:0)
+        graphlet_count_entry = pyparsing.Group(graphlet_type("graphlet") +
+                                               pyparsing.Suppress("=") +
+                                               int_num("count"))
+        graphlet_counts = pyparsing.Group(section_start_end +
+                                          pyparsing.OneOrMore(graphlet_count_entry ^ section_divide) +
+                                          section_start_end
+                                          )
 
-        row_data = pyparsing.Group((int_num("motif_id") +
-                                   int_num("nreal") +
-                                   (float_num("nrand_stats_m") + pyparsing.Suppress("+-") + float_num("nrand_stats_s")) +
-                                    (float_num("nreal_z_score") ^ int_num("nreal_z_score")) +
-                                   float_num("nreal_pval") +
-                                   float_num("creal_mili") +
-                                   int_num("uniq")))
-        data_parsing = pyparsing.OneOrMore(row_data)("enumeration")
-        return data_parsing
+        return graphlet_counts("enumeration")
 
     def __call__(self, str_data, a_ctx=None):
         """
@@ -51,6 +74,8 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
         :rtype: pandas.DataFrame
         """
         parsed_output = self._get_parser().searchString(str_data)
+        import pdb
+        pdb.set_trace()
         # TODO: LOW, Revise the parser so that it only has one root level.
         # Notice here how the parser's row field names are propagated to the columns of the returned DataFrame
         df_output = pandas.DataFrame(columns=list(parsed_output[0]["enumeration"][0].keys()), index=None)
@@ -93,8 +118,7 @@ class PyMotifCounterPgd(PyMotifCounterBase):
                                                    alias="pgd_in",
                                                    help_str="Input file",
                                                    exists=True,
-                                                   is_required=True,
-                                                   pos=0)
+                                                   is_required=True,)
 
         out_param = PyMotifCounterParameterFilepath(name="out",
                                                     alias="pgd_out",
@@ -123,4 +147,5 @@ class PyMotifCounterPgd(PyMotifCounterBase):
                          input_transformer=PyMotifCounterInputTransformerPgd(),
                          output_transformer=PyMotifCounterOutputTransformerPgd(),
                          parameters=pgd_parameters)
+
 
