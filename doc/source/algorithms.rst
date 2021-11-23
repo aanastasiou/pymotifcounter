@@ -18,9 +18,12 @@ Notes
 * ``mfinder`` reports a motif class even if it has zero samples enumerated
     * ``NetMODE`` reports only those that were enumerated.
 
-* ``pgd`` reports a motif distribution for motifs of size :math:`2,3,4` *simultaneously*,
+* ``pgd`` reports a motif distribution for *undirected* motifs of size :math:`2,3,4` *simultaneously*,
   as a result of the same "run".
-     *
+      * Because of the way ``pgd`` reports its results, the ``motif_id`` is given in the format ``(motif_id, N_NODES)``.
+      * Both of these numbers can be used with the :ref:``motif_id_to_adj_mat()`` to reconstruct the adjacency matrix
+        without *ambiguity*.
+
 
 
 .. [#] ``fanmod`` itself does not enforce a strict limit to the size of motifs it can enumerate but the underlying

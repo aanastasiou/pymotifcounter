@@ -87,18 +87,47 @@ class PyMotifCounterParameterBase:
         if self._check_value(a_value):
             self._value = a_value
 
-    def __str__(self):
+    def _human_readable_form(self):
+        """
+        Returns a dictionary with human readable forms for the semantics of each parameter.
+        """
         try:
             self.validate()
-            valid_part = ""
+            valid_part = "Valid"
         except PyMotifCounterParameterError as e:
-            valid_part = "INVALID"
+            valid_part = "Invalid"
 
-        req_part = "MANDATORY" if self._is_required else "OPTIONAL"
-        help_str_part = f"{self._help_str[0:15]}..." if self._help_str else ""
-        str_label = f"{self._name} / {self._alias} -{help_str_part}- " \
-                    f"({req_part}, DEFAULT:{self._default_value}, " \
-                    f"{str(self._value)}:{valid_part}"
+        name_alias_part = f"{self._name}{('/' + str(self._alias)) if self._alias else ''}"
+        req_part = "Mandatory" if self._is_required else "Optional"
+        help_str_part = f"{self._help_str}" if self._help_str else ""
+        current_value_part = str(self.value)
+        default_value_part = str(self._default_value)
+        return {"validation_state": ("Validation state  :", valid_part, 5),
+                "name_alias": ("Name/Alias:      :", name_alias_part, 0),
+                "required_state": ("Required          :", req_part, 2),
+                "help_string": ("Help String       :", help_str_part, 1),
+                "current_value": ("Current value     :", current_value_part, 4),
+                "default_value": ("Default value     :", default_value_part, 3),
+                }
+
+    def __str__(self):
+        param_data = self._human_readable_form()
+        # Split param labels in two subsets based on whether they need to appear ordered or not
+        params_with_ordering = "\n\t".join(list(map(lambda x: f"{x[1][0]}{x[1][1]}",
+                                                    sorted(filter(lambda x: len(x[1]) > 2 and
+                                                                            type(x[1][2]) is int and
+                                                                            x[0] != "name_alias",
+                                                                  param_data.items()),
+                                                           key=lambda x:x[1][2]))))
+        params_without_ordering = "\n\t".join(list(map(lambda x: f"{x[1][0]}{x[1][1]}",
+                                                       filter(lambda x: len(x[1]) <= 2,
+                                                              param_data.items()))))
+
+        # Name / alias is included regardless of ordering
+        str_label = f"{param_data['name_alias'][1]}\n\t" + \
+                    params_with_ordering + "\n\t" + \
+                    params_without_ordering
+
         return str_label
 
     def _check_value(self, a_value):
@@ -159,6 +188,11 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
             return [f"-{self._name}", ]
         else:
             return []
+
+    def _human_readable_form(self):
+        hrf = super()._human_readable_form()
+        hrf.update({"is_flag": ("Is flag           :", "Yes")})
+        return hrf
 
 
 class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
