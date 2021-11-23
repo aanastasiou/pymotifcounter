@@ -25,11 +25,17 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
         :return: The top level element of a PyParsing parser that handles the extraction of the useful data.
         :rtype: pyparsing.ParserElement
         """
+        # Still useful for the frequency distributions
         float_num = pyparsing.Regex(r"([+-]?)(nan|([0-9]*)\.([0-9]+))").setParseAction(lambda s, l, t: float(t[0]))
         int_num = pyparsing.Regex(r"[0-9]+").setParseAction(lambda s, l, t: int(t[0]))
-        section_start_end = pyparsing.Suppress(pyparsing.Literal("************************************************************"))
+        # Section start
+        section_start_end = pyparsing.Suppress(pyparsing.Literal("****************************"
+                                                                 "********************************"))
+        # Section divide
         section_divide = pyparsing.Suppress(pyparsing.Literal("----------------------------------------"))
+        # Parsing thraphlet name as a generic identifier
         graphlet_name = pyparsing.Regex("[a-z_0-9]+")
+        # Then using this mapping to get its motif id. Notice the return type: (Motif_id, N_Nodes)
         graphlet_to_id = {"total_4_clique": "(31710, 4)",
                           "total_4_chordcycle": "(23390, 4)",
                           "total_4_tailed_tris": "(4958, 4)",
@@ -51,10 +57,12 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
                           "total_2_1edge": "(60, 2)",
                           "total_2_indep": "(0, 2)",
                           }
+        # One result entry to be parsed is basically a key, value pair
         graphlet_count_entry = pyparsing.Group(graphlet_name("motif_id").setParseAction(lambda s, l, t: graphlet_to_id[t[0]]) +
                                                pyparsing.Suppress("=") +
                                                int_num("count"))
 
+        # Graphlet counts is basically one or more key-value pairs, plus the section delimiters
         graphlet_counts = pyparsing.Group(section_start_end +
                                           pyparsing.OneOrMore(graphlet_count_entry ^ section_divide) +
                                           section_start_end
