@@ -17,7 +17,10 @@ Notes
 
 * ``mfinder`` reports a motif class even if it has zero samples enumerated
     * ``NetMODE`` reports only those that were enumerated.
-* ``pgd`` reports a motif distribution for motifs of size :math:`2,3,4` simultaneously, as a result of the same "run".
+
+* ``pgd`` reports a motif distribution for motifs of size :math:`2,3,4` *simultaneously*,
+  as a result of the same "run".
+     *
 
 
 .. [#] ``fanmod`` itself does not enforce a strict limit to the size of motifs it can enumerate but the underlying
