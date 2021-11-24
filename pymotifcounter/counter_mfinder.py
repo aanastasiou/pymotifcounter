@@ -84,6 +84,15 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
 class PyMotifCounterMfinder(PyMotifCounterBase):
     """
     The concrete implementation of the mfinder counter.
+
+    This counter supports the following parameters:
+
+    :param s: Motif size to search (3 <= s <= 8) (default ``3``)
+    :type s: Integer
+    :param r: Number of random networks to generate (Default ``0``)
+    :type r: Integer >0
+    :param nd: Set if the input networks is **not** directed. (Default ``False``)
+    :type nd: Bool
     """
     def __init__(self, binary_location="mfinder"):
 

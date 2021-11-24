@@ -1,4 +1,4 @@
-TODO List as of Wed 24 Nov 10:51:19 UTC 2021
+TODO List as of Wed 24 Nov 11:30:12 UTC 2021
 ../pymotifcounter/abstractcounter.py:113 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
 ../pymotifcounter/abstractcounter.py:315 TODO: HIGH, this needs exception handling for timeout
 ../pymotifcounter/abstractcounter.py:316 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
@@ -8,8 +8,8 @@ TODO List as of Wed 24 Nov 10:51:19 UTC 2021
 ../pymotifcounter/counter_fanmod.py:41 TODO: HIGH, Check which fields are percentages and make sure this is denoted in the output
 ../pymotifcounter/counter_fanmod.py:65 TODO: LOW, Revise the parser so that it only has one root level.
 ../pymotifcounter/counter_fanmod.py:71 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
-../pymotifcounter/counter_fanmod.py:102 TODO: MID, Give a common name across all inputs and outputs
-../pymotifcounter/counter_fanmod.py:103 TODO: MID, Provide a way for parameters to be accessed as attributes or keys and preferably in a unified way
+../pymotifcounter/counter_fanmod.py:114 TODO: MID, Give a common name across all inputs and outputs
+../pymotifcounter/counter_fanmod.py:115 TODO: MID, Provide a way for parameters to be accessed as attributes or keys and preferably in a unified way
 ../pymotifcounter/counter_mfinder.py:23 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
 ../pymotifcounter/counter_mfinder.py:49 TODO: LOW, Revise the parser so that it only has one root level.
 ../pymotifcounter/counter_mfinder.py:53 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop

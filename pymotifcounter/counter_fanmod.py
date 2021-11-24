@@ -97,6 +97,18 @@ class PyMotifCounterInputTransformerFanmod(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterFanmod(PyMotifCounterBase):
+    """
+    The concrete Fanmod counter.
+
+    This counter supports the following parameters:
+
+    :param s: Motif size to search (3 <= s <=8) (default ``3``)
+    :type s: Integer
+    :param r: Number of random networks to generate (default ``0``)
+    :type r: Integer >0
+    :param d: Set if the graph to analyse is directed (default ``True``)
+    :type d: Bool
+    """
     def __init__(self, binary_location="fanmod_cmd"):
         # Determine the io
         # TODO: MID, Give a common name across all inputs and outputs

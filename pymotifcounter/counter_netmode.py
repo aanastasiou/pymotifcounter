@@ -91,6 +91,23 @@ class PyMotifCounterInputTransformerNetMODE(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterNetMODE(PyMotifCounterBase):
+    """
+    Concrete implementation of the NetMODE counter.
+
+    The following parameters are supported:
+
+    :param k: k-node subgraphs ( 3<=k<=6) (Default ``3``)
+    :type k: Integer
+    :param c: Number of comparison graphs (An integer in [0, 2^31)) (Default ``0``)
+    :type c: Integer
+    :param t: Number of threads to use (Default ``1``)
+    :type t: Integer >0
+    :param e: Bidirectional edge random_method (0:fixed, 1:no regard, 2: global constant, 3:local constant (default),
+              4:uniform
+    :type e: Integer
+    :param b: Number of random graphs to be discarded (Default ``0``)
+    :type b: Integer
+    """
     def __init__(self, binary_location="NetMODE"):
         # Specify input and output parameters
         in_param = PyMotifCounterParameterFilepath(name="netmode_in",

@@ -109,6 +109,14 @@ class PyMotifCounterInputTransformerPgd(PyMotifCounterInputTransformerBase):
 class PyMotifCounterPgd(PyMotifCounterBase):
     """
     Implements the concrete pgd graphlet counter.
+
+    The following parameters are supported:
+
+    :param w: Number of PROCESSING UNITS (workers) for the algorithm to use (default ``max``)
+    :type w: String (Numeric)
+    :param b: Size of batch (number of jobs) dynamically assigned to the processing unit, that is, 1, 64, 512, etc.
+              (Default: 64)
+    :type b: Integer
     """
     def __init__(self, binary_location="pgd"):
 

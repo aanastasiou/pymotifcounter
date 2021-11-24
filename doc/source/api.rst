@@ -30,7 +30,7 @@ Parameter validators
 ===========================
 
 .. automodule:: pymotifcounter.concretecounters
-    :members: PyMotifCounterNetMODE, PyMotifCounterMfinder, PyMotifCounterFanmod
+    :members: PyMotifCounterNetMODE, PyMotifCounterMfinder, PyMotifCounterFanmod, PyMotifCounterPgd
     :undoc-members:
     
 
