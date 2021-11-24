@@ -9,6 +9,8 @@
 * `NetMODE`
 * `pgd`
 
+These binaries were produced `on Ubuntu 21.04`, using `glibc 2.33`.
+
 # What if I want to recompile or modify the code of those binaries?
 `PyMotifCounter` can help with obtaining, compiling and even re-packaging these binaries for you. Please note however 
 that the following steps would have to be executed **BEFORE** installing the python package itself.
