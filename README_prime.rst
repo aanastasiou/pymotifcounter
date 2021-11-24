@@ -18,5 +18,8 @@ Which would produce the following distribution:
 
 .. image:: https://github.com/aanastasiou/pymotifcounter/blob/main/doc/source/resources/figures/fig_dist_motif_3.png?raw=true
 
-
+Installation
+------------
+Latest release can be installed from pypi by ```> pip install pymotifcounter``.
+Latest development version can be obtained by `cloning this repository <https://github.com/aanastasiou/pymotifcounter>`_
 

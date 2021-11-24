@@ -1,4 +1,4 @@
-TODO List as of Wed 24 Nov 11:30:12 UTC 2021
+TODO List as of Wed 24 Nov 11:36:33 UTC 2021
 ../pymotifcounter/abstractcounter.py:113 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
 ../pymotifcounter/abstractcounter.py:315 TODO: HIGH, this needs exception handling for timeout
 ../pymotifcounter/abstractcounter.py:316 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
