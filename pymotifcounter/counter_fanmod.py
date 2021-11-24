@@ -5,12 +5,7 @@ Implements the fanmod_cmd concrete counter.
 :date: Nov 2021
 """
 
-import os
-import re
-import shutil
-import tempfile
 import networkx
-import subprocess
 import pyparsing
 import pandas
 from .abstractcounter import *
@@ -26,8 +21,8 @@ class PyMotifCounterOutputTransformerFanmod(PyMotifCounterOutputTransformerBase)
         :return: The top level element of a PyParsing parser that handles the extraction of the useful data.
         :rtype: pyparsing.ParserElement
         """
-        # TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
-        # TODO: HIGH, Make sure that the float can parse just integer part too.
+        # TODO: LOW, Consider abstracting some standard pyparsing definitions as they could be useful for many parsers.
+        # TODO: HIGH, Make sure that the float can parse just integer part too and it becomes "Numeric".
         float_num = pyparsing.Regex(r"([+-]?)(nan|([0-9]*)\.([0-9]+))").setParseAction(lambda s, l, t: float(t[0]))
         int_num = pyparsing.Regex(r"[0-9]+").setParseAction(lambda s, l, t: int(t[0]))
         # Elements that are specific to fanmod
@@ -69,7 +64,9 @@ class PyMotifCounterOutputTransformerFanmod(PyMotifCounterOutputTransformerBase)
         parsed_output = self._get_parser().searchString(str_data)
         # TODO: LOW, Revise the parser so that it only has one root level.
         # Notice here how the parser's row field names are propagated to the columns of the returned DataFrame
-        df_output = pandas.DataFrame(columns=list(filter(lambda x: x != "Adj_Matrix", parsed_output[0]["enumeration"][0].keys())), index=None)
+        df_output = pandas.DataFrame(columns=list(filter(lambda x: x != "Adj_Matrix",
+                                                         parsed_output[0]["enumeration"][0].keys())),
+                                     index=None)
         for a_row_idx, a_row_data in enumerate(parsed_output[0]["enumeration"]):
             # TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
             df_output.at[a_row_idx, "ID"] = a_row_data["ID"]
@@ -103,7 +100,7 @@ class PyMotifCounterFanmod(PyMotifCounterBase):
     def __init__(self, binary_location="fanmod_cmd"):
         # Determine the io
         # TODO: MID, Give a common name across all inputs and outputs
-        # TODO: MID, Provide a way for parameters to be accessed as attributes or keys and prefferably in a unified way
+        # TODO: MID, Provide a way for parameters to be accessed as attributes or keys and preferably in a unified way
 
         in_param = PyMotifCounterParameterFilepath(name="i",
                                                    alias="fanmod_input",

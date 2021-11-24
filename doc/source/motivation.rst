@@ -42,7 +42,7 @@ To obtain a single motif distribution using (for example) ``mfinder``, you have 
        first 6 characters of the input file (``network.el``), that contains the motif enumeration along with other
        information associated with it that looks like the following.
 
-       .. literalinclude:: resources/mfinder_out.txt
+       .. literalinclude:: resources/raw_outputs/mfinder_out.txt
 
 To apply this process to a set of networks, you can now:
 
@@ -89,7 +89,7 @@ The ``PyMotifCounter`` module
 
 Having abstracted ``mfinder``, it was a relatively small step to create models that
 abstract the same process across a number of different motif counting algorithms, each one able to produce its own
-kind of unique feature for a given network.
+kind of unique feature for a given network [#]_.
 
 The primary objective of ``PyMotifCounter`` at this stage is to provide an interface to external processes that
 abstract away each algorithm's input, output and parameters and enable a complete motif enumeration workflow
@@ -138,7 +138,7 @@ based network data analysis ecosystem.
 Outlook
 =======
 
-One limitation of ``PyMotifCounter`` is the use of ``subprocess.popen()`` to call an external process that handles
+``PyMotifCounter`` uses ``subprocess.popen()`` to call an external process that handles
 the actual motif enumeration. Although it is possible to optimise this invocation of an external process at the
 operating system level so that it is nearly instantaneous, this method is associated with a longer processing
 overhead than actually packaging the C/C++ code that was used to write them, in a proper Python binding.
@@ -154,4 +154,7 @@ have a look at the:
 * :ref:`Developer notes <dev notes>`
 
 
+
+
 .. [#] ``mfinder`` is one of the motif enumerators supported by ``PyMotifCounter``.
+.. [#] See :ref:`algorithms` for more detailed information on the supported algorithms.

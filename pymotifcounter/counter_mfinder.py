@@ -5,12 +5,7 @@ Implements the mfinder concrete counter.
 :date: Nov 2021
 """
 
-import os
-import re
-import tempfile
-import shutil
 import networkx
-import subprocess
 import pyparsing
 import pandas
 from .abstractcounter import *
@@ -87,8 +82,12 @@ class PyMotifCounterInputTransformerMfinder(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterMfinder(PyMotifCounterBase):
+    """
+    The concrete implementation of the mfinder counter.
+    """
     def __init__(self, binary_location="mfinder"):
 
+        # Input and output parameters
         in_param = PyMotifCounterParameterFilepath(name="io_in",
                                                    alias="mfinder_in",
                                                    help_str="Input file",
@@ -102,6 +101,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                     exists=False,
                                                     is_required=True,)
 
+        # Any other parameter accepted by the algorithm
         mfinder_parameters = [PyMotifCounterParameterInt(name="s",
                                                          alias="motif_size",
                                                          help_str="Motif size to search",
@@ -118,7 +118,7 @@ class PyMotifCounterMfinder(PyMotifCounterBase):
                                                           default_value=False,
                                                           is_required=False),
                               ]
-
+        # Build the final object.
         super().__init__(binary_location=binary_location,
                          input_parameter=in_param,
                          output_parameter=out_param,

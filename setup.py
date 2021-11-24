@@ -31,7 +31,7 @@ def get_pymotifcounter_binaries():
 
 setup(
     name='pymotifcounter',
-    version='0.0.1',
+    version='1.0.0',
     description='A simple wrapper for graph motif counting algorithms',
     long_description=open('README.rst').read(),
     author='Athanasios Anastasiou',
@@ -40,7 +40,8 @@ setup(
     url='https://github.com/aanastasiou/pymotifcounter',
     license='Apache License 2.0',
     packages=["pymotifcounter", ],
-    keywords='',
+    keywords=["networks", "graph theory", "mathematics", "graphlets", "motifs", "graph", "discrete mathematics", "math",
+              ],
     data_files=[("bin", get_pymotifcounter_binaries()), ],
     setup_requires=['pytest-runner'] if any(x in ('pytest', 'test') for x in sys.argv) else [],
     tests_require=['pytest'],
@@ -49,6 +50,9 @@ setup(
                  "Topic :: Scientific/Engineering",
                  "Topic :: Scientific/Engineering :: Bio-Informatics",
                  "Topic :: Scientific/Engineering :: Mathematics",
+                 "Topic :: Scientific/Engineering :: Information Analysis",
+                 "Topic :: Scientific/Engineering :: Physics",
+                 "Topic :: Software Development :: Libraries :: Python Modules",
                  "Operating System :: POSIX :: Linux",
                  "License :: OSI Approved :: Apache Software License",
                  "Intended Audience :: Developers",

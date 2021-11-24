@@ -110,6 +110,7 @@ class PyMotifCounterBase:
         :param parameters: A list of ``PyMotifCounterParameter`` instances describing the parameters of the algorithm.
         :type parameters: list
         """
+        # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
         # BINARY LOCATION
         # Otherwise, attempt to discover the binary on the system
         # If it is not found, the binary_location will be set to "" which will raise an exception from the base
@@ -186,7 +187,8 @@ class PyMotifCounterBase:
         """
         Validates all parameters.
 
-        Convenience function that iteratively calls the validators of each parameter.
+        Notes:
+            * Iteratively calls the validators of each parameter.
 
         :returns: The same PyMotifCounter object
         """
@@ -197,6 +199,11 @@ class PyMotifCounterBase:
 
     def _get_parameters_form(self):
         """
+        Returns the "parameter form" of all defined parameters.
+
+        Notes:
+            * Iteratively calls the ``get_parameter_form()`` of each defined parameter and returns the result.
+
         :returns: A list of "parameter form" for each defined parameter as it would be required by subprocess.popen().
         :rtype: list
         """
@@ -258,7 +265,6 @@ class PyMotifCounterBase:
         :rtype: pandas.DataFrame
         :raises: PyMotifCounterParameterError from the validation step.
         """
-        # TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
         # Validate parameters
         self.validate_parameters()
 

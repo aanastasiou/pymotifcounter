@@ -1,3 +1,5 @@
+.. _algorithms:
+
 ====================
 Supported algorithms
 ====================
@@ -10,7 +12,7 @@ Supported algorithms
     ``mfinder``, :math:`3 \le s \le 8`, Both, No, Yes, Network Motifs: Simple Building Blocks of Complex Networks [3]_, `Website <https://www.weizmann.ac.il/mcb/UriAlon/download/network-motif-software>`_
     ``fanmod``, :math:`3 \le s` [#]_, Both, No, Yes, FANMOD: a tool for fast network motif detection [4]_, `Website <https://github.com/aanastasiou/fanmod-cmd>`_ [#]_
     ``NetMODE``, :math:`3 \le k \le 6`, Both, Yes, No, NetMODE: Network Motif Detection without Nauty [5]_, `Website <https://sourceforge.net/projects/netmode/>`_
-    ``PGD``, :math:`2 \le k \le 4`, Undirected, Yes, -, Efficient Graphlet Counting for Large Networks [6]_, `Website <http://graphlets.org/>`_
+    ``PGD``, :math:`2 \le k \le 4`, Undirected, Yes, No, Efficient Graphlet Counting for Large Networks [6]_, `Website <http://graphlets.org/>`_
 
 Notes
 -----
@@ -29,7 +31,8 @@ Notes
 .. [#] ``fanmod`` itself does not enforce a strict limit to the size of motifs it can enumerate but the underlying
        `nauty <https://pallini.di.uniroma1.it/>`_ library will complain for motif sizes greater than 8.
 .. [#] Please note that `the original fanmod `website <http://theinf1.informatik.uni-jena.de/motifs/>`_ is no
-       longer accessible. The original ``fanmod`` was operated *only* via a ``wxwidgets`` Graphical User
+       longer accessible. An `Internet Archive snapshot of it can be found here <https://web.archive.org/web/20180805111938/http://theinf1.informatik.uni-jena.de/motifs/>`_.
+       The original ``fanmod`` was operated *only* via a ``wxwidgets`` Graphical User
        Interface (GUI). Subsequent work (by `Sebastian Bücker <https://github.com/gabbage/fanmod-cmd>`_) produced
        ``fanmod_cmd`` and that version was used as the basis for `the code-base that produces the binary
        used in this project <https://github.com/aanastasiou/fanmod-cmd>`_.

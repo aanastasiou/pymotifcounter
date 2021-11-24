@@ -13,6 +13,9 @@ from .validators import *
 class PyMotifCounterParameterBase:
     """
     Represents a parameter that is used to pass data to an external program.
+
+    Notes:
+        * This class is not expected to be instantiated directly.
     """
 
     def __init__(self, name,
@@ -90,6 +93,12 @@ class PyMotifCounterParameterBase:
     def _human_readable_form(self):
         """
         Returns a dictionary with human readable forms for the semantics of each parameter.
+
+        :returns: A dictionary that maps a "parameter logical name" to a tuple
+                  ("Human readable string", "value str to depict", optional integer ordering).
+                  This information is then used by the ``__str__()`` of the same object to create the human
+                  readable form that can be presented to users.
+        :rtype: dict(str:tuple(str,str,[int]))
         """
         try:
             self.validate()
@@ -111,14 +120,28 @@ class PyMotifCounterParameterBase:
                 }
 
     def __str__(self):
+        """
+        Constructs and returns a human readable string form for all the data that define a parameter.
+
+        Notes:
+            * This is a generic human readable form function that "renders" the information it obtains from
+              ``_human_readable_form()``.
+            * Parameter types that may have added more data that define the parameter are expected to override
+              ``_human_readable_form()`` and enrich its returned dict, rather than modify this generic code of
+              rendering that same information.
+
+        :returns: A string that is formatted as name/alias followed by an indented list of ordered data followed
+                  by the list of unordered data about the parameter.
+        :rtype: str
+        """
         param_data = self._human_readable_form()
         # Split param labels in two subsets based on whether they need to appear ordered or not
         params_with_ordering = "\n\t".join(list(map(lambda x: f"{x[1][0]}{x[1][1]}",
-                                                    sorted(filter(lambda x: len(x[1]) > 2 and
-                                                                            type(x[1][2]) is int and
+                                                    sorted(filter(lambda x: len(x[1]) > 2 and type(x[1][2]) is int and
                                                                             x[0] != "name_alias",
                                                                   param_data.items()),
                                                            key=lambda x:x[1][2]))))
+
         params_without_ordering = "\n\t".join(list(map(lambda x: f"{x[1][0]}{x[1][1]}",
                                                        filter(lambda x: len(x[1]) <= 2,
                                                               param_data.items()))))
@@ -139,8 +162,8 @@ class PyMotifCounterParameterBase:
         :returns: True
         :rtype: bool
         :raises: PyMotifCounterParameterError
-
         """
+
         if a_value is None and self._is_required:
             raise PyMotifCounterParameterError(f"Parameter {self._name} / {self._alias} is required.")
 
@@ -173,7 +196,9 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
     """
     Defines a flag type parameter.
 
-    Beyond establishing its value as bool, a flag's parameter name only appears in the command line if it is True.
+    Notes:
+        * Beyond establishing its value as bool, a flag's parameter name only
+          appears in the command line if it is True.
     """
     def __init__(self, name,
                  is_required=True,
@@ -190,6 +215,10 @@ class PyMotifCounterParameterFlag(PyMotifCounterParameterBase):
             return []
 
     def _human_readable_form(self):
+        """
+        Adds the ``is_flag`` information to the human readable form dict of data.
+
+        """
         hrf = super()._human_readable_form()
         hrf.update({"is_flag": ("Is flag           :", "Yes")})
         return hrf
@@ -199,7 +228,9 @@ class PyMotifCounterParameterInt(PyMotifCounterParameterBase):
     """
     Defines an integer parameter.
 
-    The actual range of the integer can be further customised with ``is_g, is_ge, is_l, is_le`` validator callbacks.
+    Notes:
+        * The actual range of the integer can be further customised with
+          ``is_g, is_ge, is_l, is_le`` validator callbacks.
     """
     def __init__(self, name,
                  is_required=True,

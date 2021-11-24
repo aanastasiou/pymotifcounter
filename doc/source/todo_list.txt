@@ -1,17 +1,19 @@
-TODO List as of Fri 19 Nov 10:21:09 UTC 2021
-../pymotifcounter/abstractcounter.py:231 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
-../pymotifcounter/abstractcounter.py:279 TODO: HIGH, this needs exception handling for timeout
-../pymotifcounter/abstractcounter.py:280 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
-../pymotifcounter/counter_fanmod.py:20 TODO: MID, The parser --> DataFrame is pretty standard by now, should be incorporated in the standard round-trip
-../pymotifcounter/counter_fanmod.py:29 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
-../pymotifcounter/counter_fanmod.py:30 TODO: HIGH, Make sure that the float can parse just integer part too.
-../pymotifcounter/counter_fanmod.py:46 TODO: HIGH, Check which fields are percentages and make sure this is denoted in the output
-../pymotifcounter/counter_fanmod.py:70 TODO: LOW, Revise the parser so that it only has one root level.
-../pymotifcounter/counter_fanmod.py:74 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
-../pymotifcounter/counter_fanmod.py:105 TODO: MID, Give a common name across all inputs and outputs
-../pymotifcounter/counter_fanmod.py:106 TODO: MID, Provide a way for parameters to be accessed as attributes or keys and prefferably in a unified way
-../pymotifcounter/counter_mfinder.py:28 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
-../pymotifcounter/counter_mfinder.py:54 TODO: LOW, Revise the parser so that it only has one root level.
-../pymotifcounter/counter_mfinder.py:58 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
-../pymotifcounter/counter_netmode.py:62 TODO:HIGH, need to inspect the `err` and raise appropriate errors
-../pymotifcounter/parameters.py:6 TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.
+TODO List as of Wed 24 Nov 10:51:19 UTC 2021
+../pymotifcounter/abstractcounter.py:113 TODO: MID, Add a named parameter here to enable saving the ctx variable of a run, down to a file if required.
+../pymotifcounter/abstractcounter.py:315 TODO: HIGH, this needs exception handling for timeout
+../pymotifcounter/abstractcounter.py:316 TODO: HIGH, if the process returns an error, this error should be piped up as an exception
+../pymotifcounter/counter_fanmod.py:15 TODO: MID, The parser --> DataFrame is pretty standard by now, should be incorporated in the standard round-trip
+../pymotifcounter/counter_fanmod.py:24 TODO: LOW, Consider abstracting some standard pyparsing definitions as they could be useful for many parsers.
+../pymotifcounter/counter_fanmod.py:25 TODO: HIGH, Make sure that the float can parse just integer part too and it becomes "Numeric".
+../pymotifcounter/counter_fanmod.py:41 TODO: HIGH, Check which fields are percentages and make sure this is denoted in the output
+../pymotifcounter/counter_fanmod.py:65 TODO: LOW, Revise the parser so that it only has one root level.
+../pymotifcounter/counter_fanmod.py:71 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
+../pymotifcounter/counter_fanmod.py:102 TODO: MID, Give a common name across all inputs and outputs
+../pymotifcounter/counter_fanmod.py:103 TODO: MID, Provide a way for parameters to be accessed as attributes or keys and preferably in a unified way
+../pymotifcounter/counter_mfinder.py:23 TODO: LOW, Consider abstracting these two somehow as these definitions will be useful for every parser.
+../pymotifcounter/counter_mfinder.py:49 TODO: LOW, Revise the parser so that it only has one root level.
+../pymotifcounter/counter_mfinder.py:53 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
+../pymotifcounter/counter_pgd.py:23 TODO: HIGH, Use float_num to parse the rest of the sections and offer them as additional columns
+../pymotifcounter/counter_pgd.py:80 TODO: LOW, Revise the parser so that it only has one root level.
+../pymotifcounter/counter_pgd.py:84 TODO: HIGH, The conversion can be performed more automatically through pandas rather than a loop
+../pymotifcounter/parameters.py:12 TODO: MID, Check to see if the "directedness" of the algorithm could depend on the networkx.Graph at the input so that the parameter value is set automatically.

@@ -5,12 +5,7 @@ Implements the pgd concrete counter.
 :date: Nov 2021
 """
 
-import os
-import re
-import tempfile
-import shutil
 import networkx
-import subprocess
 import pyparsing
 import pandas
 from .abstractcounter import *
@@ -20,12 +15,12 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
     @staticmethod
     def _get_parser():
         """
-        Parses the "Full list of subgraphs size k ids:" section of mfinder's output.
+        Parses the actual graphlet counts section of PGD's output.
 
         :return: The top level element of a PyParsing parser that handles the extraction of the useful data.
         :rtype: pyparsing.ParserElement
         """
-        # Still useful for the frequency distributions
+        # TODO: HIGH, Use float_num to parse the rest of the sections and offer them as additional columns
         float_num = pyparsing.Regex(r"([+-]?)(nan|([0-9]*)\.([0-9]+))").setParseAction(lambda s, l, t: float(t[0]))
         int_num = pyparsing.Regex(r"[0-9]+").setParseAction(lambda s, l, t: int(t[0]))
         # Section start
@@ -33,7 +28,7 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
                                                                  "********************************"))
         # Section divide
         section_divide = pyparsing.Suppress(pyparsing.Literal("----------------------------------------"))
-        # Parsing thraphlet name as a generic identifier
+        # Parsing graphlet name as a generic identifier
         graphlet_name = pyparsing.Regex("[a-z_0-9]+")
         # Then using this mapping to get its motif id. Notice the return type: (Motif_id, N_Nodes)
         graphlet_to_id = {"total_4_clique": "(31710, 4)",
@@ -72,13 +67,13 @@ class PyMotifCounterOutputTransformerPgd(PyMotifCounterOutputTransformerBase):
 
     def __call__(self, str_data, a_ctx=None):
         """
-        Transforms the raw string output from the mfinder process to a computable pandas DataFrame
+        Transforms the raw string output from the pgd process to a computable pandas DataFrame
 
         :param str_data:
         :type str_data:
         :param a_ctx: Dictionary of context information from the subsequent execution steps
         :type a_ctx: dict
-        :return: A DataFrame with all enumerated motifs according to mfinder's algorithm.
+        :return: A DataFrame with all enumerated graphlets according to pgd.
         :rtype: pandas.DataFrame
         """
         parsed_output = self._get_parser().searchString(str_data)
@@ -112,8 +107,12 @@ class PyMotifCounterInputTransformerPgd(PyMotifCounterInputTransformerBase):
 
 
 class PyMotifCounterPgd(PyMotifCounterBase):
+    """
+    Implements the concrete pgd graphlet counter.
+    """
     def __init__(self, binary_location="pgd"):
 
+        # pgd I/O parameters
         in_param = PyMotifCounterParameterFilepath(name="f",
                                                    alias="pgd_in",
                                                    help_str="Input file",
@@ -126,7 +125,7 @@ class PyMotifCounterPgd(PyMotifCounterBase):
                                                     exists=False,
                                                     default_value="-",
                                                     is_required=True,)
-
+        # Interface to the rest of the parameters
         pgd_parameters = [PyMotifCounterParameterStr(name="w",
                                                      alias="workers",
                                                      help_str="Number of PROCESSING UNITS (workers) for "
@@ -140,7 +139,7 @@ class PyMotifCounterPgd(PyMotifCounterBase):
                                                      default_value=64,
                                                      validation_callbacks=(is_ge(0),)),
                           ]
-
+        # Build the base object
         super().__init__(binary_location=binary_location,
                          input_parameter=in_param,
                          output_parameter=out_param,

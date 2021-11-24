@@ -1,21 +1,20 @@
 # Packaged binaries
 
-`PyMotifCounter` auto-discovers binaries from the following packages (provided that they can be reached via your `PATH`
-environment variable):
+`PyMotifCounter` includes pre-compiled binaries for the following algorithms:
 
 * `mfinder`
+    * A couple of minor changes to ``mfinder`` are also applied here. The resulting binary that ``PyMotifCounter`` uses
+      is slightly different than the one produced by the original source code.
 * `fanmod-cmd`
 * `NetMODE`
+* `pgd`
 
-If you have one or more of those binaries setup already, the `PyMotifCounter` module will automatically discover each 
-one at runtime when it is required.
-
-# What if I don't have any of those installed?
-`PyMotifCounter` can help with obtaining, compiling and even packaging these binaries for you. Please note however 
+# What if I want to recompile or modify the code of those binaries?
+`PyMotifCounter` can help with obtaining, compiling and even re-packaging these binaries for you. Please note however 
 that the following steps would have to be executed **BEFORE** installing the python package itself.
 
-This directory contains three (mostly empty) sub-directories (`mfinder`, `NetMODE`, `fanmod-cmd`), one for each binary.
-When you first obtain the package, each sub-directory contains two files:
+This directory contains three (mostly empty) sub-directories (`mfinder`, `NetMODE`, `fanmod-cmd`, `pgd`), one for 
+each binary. When you first obtain the package, each sub-directory contains two files:
 
 1. A bash script prefixed with `fetch_`
 2. A `readme.md` file with detailed information about obtaining and compiling each binary.
@@ -23,10 +22,10 @@ When you first obtain the package, each sub-directory contains two files:
 For **all** of the binaries included here, the process is exactly the same and is demonstrated here using `mfinder` *as 
 an example*:
 
-1. `> cd mfinder`
-2. `> ./fetch_mfinder.sh`
-3. `> cd mfinder1.21` (Version 1.21 at the time of writing)
-4. `> make all`
+1. `> cd NetMODE`
+2. `> ./fetch_NetMODE.sh`
+3. `> cd NetMODE`
+4. `> make`
 
 At the end of this process, a binary will have been created in the default location expected by `PyMotifCounter`. 
 

@@ -6,23 +6,18 @@ Implements the NetMODE concrete counter.
 """
 
 import os
-import re
 import itertools
-import shutil
 import networkx
-import subprocess
 import pyparsing
 import pandas
 from .abstractcounter import *
 
 
-# TODO, HIGH: Document the concrete classes
 class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase):
     @staticmethod
     def _get_parser():
         """
-        Returns a parser that is used to transform the output of a given algorithm
-        to computable form.
+        Returns a parser that is used to transform the output of Fanmod to computable form.
 
         Notes:
             * This is usually a pyparsing parser.
@@ -59,7 +54,6 @@ class PyMotifCounterOutputTransformerNetMODE(PyMotifCounterOutputTransformerBase
         :rtype:
         """
         # Process the output (if succesful)
-        # TODO:HIGH, need to inspect the `err` and raise appropriate errors
         output_data = self._get_parser().parseString(str_data)
         ret_dataframe = pandas.DataFrame(
             columns=list(output_data["zscore"][0].keys()) + ["ave_rand_freq_sd", "ave_rand_conc_sd"], index=None)

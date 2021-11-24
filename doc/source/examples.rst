@@ -11,7 +11,7 @@ Basic Use
 * The following example is functional with all counters currently supported by ``PyMotifCounter``.
 
 * To try out another counter, exchange ``PyMotifCounterMfinder`` for one of
-  ``PyMotifCounterNetMODE, PyMotifCounterFanmod``
+  ``PyMotifCounterNetMODE, PyMotifCounterFanmod, PyMotifCounterPgd``
 
 .. literalinclude:: resources/code_examples/basic_usage.py
     :language: Python
@@ -20,7 +20,6 @@ Basic Use
     :alt: Motif distribution of size 3
 
     Distribution of fully connected motifs of size 3 for a given network.
-
 
 
 Parameter values and aliases
@@ -40,6 +39,66 @@ Parameter values and aliases
 
     Motif distributions for motifs of size 4 and size 5.
 
+Inspecting the available parameters
+===================================
+
+* To get a quick human-readable overview of the parameters of a given counter, use the ``show_parameters()`` function.
+
+* Suppose that you work on the command line or within a Jupyter notebook and notice that a new motif counter is
+  now accessible via ``PyMotifCounter``.
+
+* To get a human readable overview of the supported parameters, you can:
+
+::
+
+    # First of all, let's import a counter
+    from pymotifcounter.concretecounters import PyMotifCounterMfinder
+
+    # Let's construct a counter instance (the instance is constructed with
+    # sensible default values for all of its parameters)
+    motif_counter = PyMotifCounterMfinder()
+
+    # Now, let's get a human readable form of all of its parameters:
+    hrf = motif_counter.show_parameters()
+
+    # Printing out the elements of the ``hrf`` list will result
+    # in a nicely printed human readable form of the parameters
+    for an_hrf in hrf:
+        print(an_hrf)
+
+
+This would return:
+
+::
+
+    nd/is_undirected
+        Help String       :Input network is a non-directed network
+        Required          :Optional
+        Default value     :False
+        Current value     :False
+        Validation state  :Valid
+        Is flag           :Yes
+    r/n_random
+        Help String       :Number of random networks to generate
+        Required          :Mandatory
+        Default value     :0
+        Current value     :0
+        Validation state  :Valid
+
+    s/motif_size
+        Help String       :Motif size to search
+        Required          :Mandatory
+        Default value     :3
+        Current value     :3
+        Validation state  :Valid
+
+
+You can also get the human readable form of any parameter via the ``get_parameter()`` function too, like this:
+
+::
+
+    # Continuing from the previous session
+    print(motif_counter.get_parameter("s"))
 
 
 Visualising motifs
@@ -117,6 +176,8 @@ the constructor using the parameter ``binary_location``:
 ::
 
     motif_counter = PyMotifCounterMfinder(binary_location="/some/path/to/mfinder")
+
+
 
 
 

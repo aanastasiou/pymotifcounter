@@ -84,25 +84,25 @@ Parameters
 ``mfinder``
 -----------
 
-.. literalinclude:: resources/mfinder_params.txt
+.. literalinclude:: resources/raw_outputs/mfinder_params.txt
 
 
 ``fanmod_cmd``
 --------------
 
-.. literalinclude:: resources/fanmod_params.txt
+.. literalinclude:: resources/raw_outputs/fanmod_params.txt
 
 
 ``NetMODE``
 -----------
 
-.. literalinclude:: resources/netmode_params.txt
+.. literalinclude:: resources/raw_outputs/netmode_params.txt
 
 
 ``PGD``
 -------
 
-.. literalinclude:: resources/pgd_params.txt
+.. literalinclude:: resources/raw_outputs/pgd_params.txt
 
 
 Outputs
@@ -111,13 +111,13 @@ Outputs
 ``mfinder``
 -----------
 
-.. literalinclude:: resources/mfinder_out.txt
+.. literalinclude:: resources/raw_outputs/mfinder_out.txt
 
 
 ``fanmod_cmd``
 --------------
 
-.. literalinclude:: resources/fanmod_out.txt
+.. literalinclude:: resources/raw_outputs/fanmod_out.txt
 
 
 ``NetMODE``
@@ -126,15 +126,15 @@ Outputs
 NetMODE produces both a file with results as well as a file with the 
 adjacency matrices of the motifs it has detected.
 
-.. literalinclude:: resources/netmode_out_1.txt
+.. literalinclude:: resources/raw_outputs/netmode_out_1.txt
 
-.. literalinclude:: resources/netmode_out_2.txt
+.. literalinclude:: resources/raw_outputs/netmode_out_2.txt
 
 
 ``pgd``
 -------
 
-.. literalinclude:: resources/pgd_out.txt
+.. literalinclude:: resources/raw_outputs/pgd_out.txt
 
 
 
@@ -144,10 +144,3 @@ Other algorithms
 1. ``ORCA`` `website <https://github.com/thocevar/orca>`_
     * Also see `this <https://github.com/qema/orca-py>`_
 2. `Hypergraphlets <http://www0.cs.ucl.ac.uk/staff/natasa/group-page.html>`_
-
-3. ``PGD``
-    * Websites:
-        * `One <https://github.com/nkahmed/PGD>`_
-        * `Two <http://nesreenahmed.com/graphlets/>`_
-        * `Three <http://graphlets.org/>`_
-
