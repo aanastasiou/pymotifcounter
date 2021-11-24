@@ -45,9 +45,12 @@ Overview
 
         class PyMotifCounterFanmod
 
+        class PyMotifCounterPgd
+
         PyMotifCounterMfinder --|> PyMotifCounterBase
         PyMotifCounterNetMODE --|> PyMotifCounterBase
         PyMotifCounterFanmod --|> PyMotifCounterBase
+        PyMotifCounterPgd --|> PyMotifCounterBase
 
 
 Inputs
@@ -135,6 +138,13 @@ adjacency matrices of the motifs it has detected.
 -------
 
 .. literalinclude:: resources/raw_outputs/pgd_out.txt
+
+
+Recompiling the binaries
+========================
+
+For the moment, please see `this document <https://github.com/aanastasiou/pymotifcounter/blob/main/binaries/README.md>`_
+with more information about this.
 
 
 
