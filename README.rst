@@ -39,6 +39,9 @@ Which would produce the following distribution:
 
 Installation
 ------------
-Latest release can be installed from pypi by ```> pip install pymotifcounter``.
-Latest development version can be obtained by `cloning this repository <https://github.com/aanastasiou/pymotifcounter>`_
+* Latest release can be installed from pypi by ```> pip install pymotifcounter``.
+
+* Latest development version can be obtained by `cloning this repository <https://github.com/aanastasiou/pymotifcounter>`_
+
+* For more details please see [the project's documentation on readthedocs](https://pymotifcounter.readthedocs.io/en/latest/)
 
