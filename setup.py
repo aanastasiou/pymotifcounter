@@ -31,7 +31,7 @@ def get_pymotifcounter_binaries():
 
 setup(
     name='pymotifcounter',
-    version='1.0.0',
+    version='1.0.1',
     description='A simple wrapper for graph motif counting algorithms',
     long_description=open('README.rst').read(),
     author='Athanasios Anastasiou',
