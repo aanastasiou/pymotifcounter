@@ -36,6 +36,7 @@ Which would produce the following distribution:
    :maxdepth: 2
    :caption: Contents:
 
+   installation
    examples
    algorithms
    motivation
