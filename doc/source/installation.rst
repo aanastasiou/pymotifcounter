@@ -87,21 +87,28 @@ The first method is guranteed to work with all configurations, the second method
 special access depending on the way your system administrator has set the system up.
 
 
-Add symbolic links to your ``/usr/local/bin`` or V.Env's ``bin/`` directory
----------------------------------------------------------------------------
+Add symbolic links to specific directories
+------------------------------------------
 
 This process is the same (and works in exactly the same way), regardless of which 
 directory you choose.
 
-``/usr/local/bin`` is the (Linux) conventional directory for making third party binaries
-available to users in a given computer.
+You have three options:
 
-Your V.Env's ``bin/`` directory contains executables that are specific to your Python installation.
+* ``~/.local/bin``, this directory is for binaries accessible to a given user. You definitely 
+  have full access rights to this directory.
+
+* ``/usr/local/bin`` is the (Linux) conventional directory for making third party binaries
+  available to users in a given computer. You probably have access rights to this directory.
+
+* Your V.Env's ``bin/`` directory contains executables that are specific to your Python installation.
+  If you are using a program like ``pyenv``, you definitely have full access rights to this directory.
 
 
 1. Find the ``bin`` directory of your choice
 
-   * Either navigate to ``/usr/local/bin`` with ``> cd /usr/local/bin``; or
+   * Either navigate to ``/usr/local/bin`` with ``> cd /usr/local/bin``, 
+     or ``> cd ~/.local/bin``; or
 
    * Find the ``bin/`` directory of your virtual environment:
 
@@ -121,14 +128,6 @@ Your V.Env's ``bin/`` directory contains executables that are specific to your P
 
 4. Navigate to your home directory with ``> cd~/`` and you should now be able to run ``NetMODE``.
 
-
-**PROS:**
-
-* The binaries will be available to your command line **only** when the virtual environment is activated
-
-**CONS:**
-
-* There are no cons
 
 Add each binary to your ``PATH``
 --------------------------------
@@ -152,11 +151,4 @@ Add each binary to your ``PATH``
    the changes to take effect.
 
 
-**PROS:**
-
-* The binaries are always available throughout your system.
-
-**CONS:**
-
-* There are no cons
 
