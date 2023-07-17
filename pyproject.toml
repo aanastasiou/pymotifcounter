@@ -48,8 +48,8 @@ test = [
 [project.urls]
 #Homepage = ""
 documentation = "https://pymotifcounter.readthedocs.io/en/latest/"
-repository = "https://github.com/aanastasiou/neoads/"
-changelog = "https://github.com/aanastasiou/neoads/blob/main/Changelog"
+repository = "https://github.com/aanastasiou/pymotifcounter"
+#changelog = ""
 
 [build-system]
 build-backend = 'setuptools.build_meta'
