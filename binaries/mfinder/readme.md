@@ -16,3 +16,8 @@
 
 This last step will create the `mfinder` executable in the location that 
 `pymotifcounter` expects it to be by default (that is `binaries/mfinder/mfinder1.21/mfinder`).
+
+## Disclaimer
+
+I am not the author of the mfinder C source code that is included in this repository.
+I decided to add it to the repository for archival purposes in 2023
