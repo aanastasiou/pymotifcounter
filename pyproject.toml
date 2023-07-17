@@ -1,0 +1,62 @@
+[project]
+name = "pymotifcounter"
+version = "2.0.0"
+description = "A simple wrapper for graph motif counting algorithms"
+readme = "./README.rst"
+authors = [{name="Athanasios Anastasiou", email="athanastasiou@gmail.com"}]
+keywords= [
+  "networks", 
+  "graph theory", 
+  "mathematics", 
+  "graphlets", 
+  "motifs", 
+  "graph", 
+  "discrete mathematics", 
+  "math"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Physics",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Operating System :: POSIX :: Linux",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+]
+
+requires-python = ">=3.11"
+
+dependencies = [
+  "pandas",
+  "networkx",
+  "pyparsing"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+]
+
+# license
+
+[project.urls]
+#Homepage = ""
+documentation = "https://pymotifcounter.readthedocs.io/en/latest/"
+repository = "https://github.com/aanastasiou/neoads/"
+changelog = "https://github.com/aanastasiou/neoads/blob/main/Changelog"
+
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = [
+    'setuptools',
+]
+
+[tool.setuptools]
+packages = ["pymotifcounter"]
+
